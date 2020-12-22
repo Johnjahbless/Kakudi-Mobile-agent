@@ -5,7 +5,6 @@ import ForgotPassword from "./pages/Pages/Auth/ForgotPassword";
 import Login from "./pages/Pages/Auth/Login";
 import ResetPassword from "./pages/Pages/Auth/ResetPassword";
 import Error404 from "./pages/Pages/Errors/404";
-import Activities from "./pages/Pages/Features/Activities";
 import Dashboard from "./pages/Pages/Features/dashboard";
 import Recharge from "./pages/Pages/Features/recharge";
 import AddCard from "./pages/Pages/Features/add-card";
@@ -21,7 +20,7 @@ import Kulator from "./pages/Pages/Features/ka-kulator";
 
 import Settings from "./pages/Pages/Features/Settings";
 import { useLocation } from "react-router-dom";
-import AgentManagement from "./pages/Pages/Features/agent-management";
+/*import AgentManagement from "./pages/Pages/Features/agent-management";
 import ResolveIssues from "./pages/Pages/Features/resolve-issues";
 import ManageCustomer from "./pages/Pages/Features/manage-customers";
 import WalletTopUp from "./pages/Pages/Features/wallet-top";
@@ -33,6 +32,7 @@ import SpendAnalysis from "./pages/Pages/Features/spend-analysis";
 import SaleAnalysis from "./pages/Pages/Features/sales-analysis";
 import Statistics from "./pages/Pages/Features/logs";
 import Audit from "./pages/Pages/Features/audit-trail";
+import Activities from "./pages/Pages/Features/Activities";*/
 import MyActivities from "./pages/Pages/Features/my-activites";
 import ChangePassword from "./pages/Pages/Features/change-password";
 import history from "./history"; 
@@ -70,7 +70,7 @@ function App() {
           <Route path="/support" exact component={Support} />{" "}
           <Route path="/ka-kulator" exact component={Kulator} />{" "}
 
-          <Route path="/agent-management" exact component={AgentManagement} />{" "}
+       { /*  <Route path="/agent-management" exact component={AgentManagement} />{" "}
           <Route path="/resolve-issues" exact component={ResolveIssues} />{" "}
           <Route path="/customer-management" exact component={ManageCustomer} />{" "}
           <Route path="/wallet-funding" exact component={WalletTopUp} />{" "}
@@ -82,7 +82,7 @@ function App() {
           <Route path="/sales-analysis" exact component={SaleAnalysis} />{" "}
           <Route path="/statistics" exact component={Statistics} />{" "}
           <Route path="/audit-trail" exact component={Audit} />{" "}
-          <Route path="/activities/:id" exact component={Activities} />{" "}
+          <Route path="/activities/:id" exact component={Activities} />{" "}*/}
           <Route path="/me/activities/" exact component={MyActivities} />{" "}
           <Route path="/change-password" exact component={ChangePassword} />{" "}
 

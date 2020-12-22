@@ -16,15 +16,7 @@ export class SideBar extends Component {
   }
 } 
 
-componentDidMount(){
-  
-axios.get(`${data.host}api/v1/school-info?token=${data.token}`)
-.then(response => {
-  // eslint-disable-next-line
-  
-  this.setState({info: response.data.title})
-}).catch((error) => {});
-}
+componentDidMount(){}
 
   render() {
     return (

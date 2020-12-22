@@ -66,12 +66,11 @@ export class Login extends Component {
       userDetails: this.state.userDetails
       }
 
-  axios.post(`${data.host}auth/v1/login`, logins)
+  axios.post(`${data.host}auth/v1/agent/login`, logins)
           .then(res => {
            return res.data !== '200'?(cookies.set('__sessions', res.data, options), cookies.set('__lockout', {lockout: false}, options),window.location = '/') : this.setState({loading: false, error: 'Your IP Address has been blocked' });
           }).catch(err => {
               this.setState({loading: false, error: 'Invalid email or password' });
-              window.location = '/'
           });
 
    }

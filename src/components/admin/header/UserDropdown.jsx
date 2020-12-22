@@ -32,19 +32,19 @@ export class UserDropdown extends Component {
  componentDidMount() {
 		 let userDetails = cookies.get('__sessions');
      // eslint-disable-next-line
-      //userDetails !== undefined? this.sendDetails() : window.location = '/auth/login';
+      userDetails !== undefined? this.sendDetails() : window.location = '/auth/login';
 
-      axios.get(`${data.host}api/v1/student?token=${data.token}`)
+      axios.get(`${data.host}api/v1/agent?token=${data.token}`)
       .then(response => {
         // eslint-disable-next-line
-        this.setState({image: response.data[0].image, name: response.data[0].firstname + ' ' + response.data[0].othername, logTime: response.data[0].last_logout})
-      }).catch((error) => {console.log(error)});
+        this.setState({image: response.data[0].image, name: response.data[0].firstname + ' ' + response.data[0].lastname, logTime: response.data[0].last_logout})
+      }).catch((error) => {});
   
-          axios.get(`${data.host}api/v1/student?token=${data.token}`)
+          axios.get(`${data.host}api/v1/agent?token=${data.token}`)
       .then(response => {
         // eslint-disable-next-line
-        this.setState({image: response.data[0].image, name: response.data[0].firstname + ' ' + response.data[0].othername, logTime: response.data[0].last_logout})
-      }).catch((error) => {console.log(error)});
+        this.setState({image: response.data[0].image, name: response.data[0].firstname + ' ' + response.data[0].lastname, logTime: response.data[0].last_logout})
+      }).catch((error) => {});
       }
 
        handleOnAction (event) {

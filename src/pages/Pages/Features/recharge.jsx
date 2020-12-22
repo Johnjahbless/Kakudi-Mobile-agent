@@ -2,52 +2,237 @@ import React, { Component } from "react";
 import axios from 'axios';
 import $ from 'jquery';
 import { Link } from 'react-router-dom';
-import Chart from 'chart.js';
 import data from '../../../components/constants';
 import Loading from './loader';
 
+
+const Cards = props => (
+  <Link to=""><li onClick={() => { props.pay(props.id) }} className="media mb-3">
+  <div className="rounded-circle bg-light p-3 mr-3">
+    <i className="fas fa-credit-card"></i>
+  </div>
+  <div className="media-body">
+    <div className="media-title">{props.title}</div>
+    <div className="text-small text-muted">{props.card_no.substring(0,4)}************** <div className="bullet"></div> Expires {props.month}/{props.year}</div>
+  </div>
+</li></Link>
+)
 export class Profile extends Component {
    constructor(props) {
          super(props);
- 
+        this.onChangePhone = this.onChangePhone.bind(this);
+        this.onChangePurchaseType = this.onChangePurchaseType.bind(this);
+        this.onChangeNetworkType = this.onChangeNetworkType.bind(this);
+        this.onChangeAmount = this.onChangeAmount.bind(this);
+        this.onChangeSaveDetails = this.onChangeSaveDetails.bind(this);
+        this.onChangeCardNumber = this.onChangeCardNumber.bind(this);
+        this.onChangeCardExpiryMonth = this.onChangeCardExpiryMonth.bind(this);
+        this.onChangeCardExpiryYear = this.onChangeCardExpiryYear.bind(this);
+        this.onChangeCardCvv = this.onChangeCardCvv.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
+        this.onSubmit2 = this.onSubmit2.bind(this);
+        this.onPay = this.onPay.bind(this);
+        this.onPayCard = this.onPayCard.bind(this);
+        
          
          this.state = {
-             name: '',
-             image: '',
-             logTime: '',
-             state: '',
-             metricNo:'',
-             lga: '',
-             department: '',
-             programme: '',
-             gender: '',
+             balance: 0,
+             cardNumber: '',
+             month: '',
+             year: '',
+             cvv: '',
+             phone: '',
+             purchaseType: '0',
+             networkType: '0',
+             amount: 0,
+             saveDetails: '',
              loading: false,
-             student: []
+             cards: []
          }
  }
   componentDidMount() {
    
-    $(document).ready(() => {
-        $('#table-1').DataTable({ 
-            lengthChange: true,
-            dom: 'Bfrtip',
-          });
-          
-        });
-
-      axios.get(`${data.host}api/v1/student?token=${data.token}`)
+    axios.get(`${data.host}api/v1/wallet/balance?token=${data.token}`)
       .then(response => {
         // eslint-disable-next-line
-        this.setState({student: response.data[0], state:response.data[0].state, lga: response.data[0].lga, metricNo: response.data[0].metricNo, department: response.data[0].department, programme: response.data[0].programme, gender: response.data[0].gender, image: response.data[0].image, name: response.data[0].firstname + ' ' + response.data[0].othername, logTime: response.data[0].last_logout})
+        this.setState({balance: response.data[0].balance})
       }).catch((error) => {console.log(error)});
   
+      axios.get(`${data.host}api/v1/agent/cards?token=${data.token}`)
+      .then(response => {
+        // eslint-disable-next-line
+        this.setState({cards: response.data})
+      }).catch((error) => {console.log(error)});
+}
 
-      
+ componentWillUnmount() {
+  $('#mediumModal').modal('hide');
+  $('#congratulationModal').modal('hide');
+ }
+
+onChangePhone(e) {
+  this.setState({phone: e.target.value});
+}
+
+onChangePurchaseType(e) {
+  this.setState({purchaseType: e.target.value});
+}
+
+onChangeNetworkType(e) {
+  this.setState({networkType: e.target.value});
+}
+
+onChangeAmount(e) {
+  this.setState({amount: e.target.value});
+}
+
+onChangeSaveDetails(e) {
+  this.setState({saveDetails: e.target.checked});
+}
+
+onChangeCardNumber(e) {
+  this.setState({cardNumber: e.target.value});
+}
+
+onChangeCardExpiryMonth(e) {
+  this.setState({month: e.target.value});
+}
+
+onChangeCardExpiryYear(e) {
+  this.setState({year: e.target.value});
+}
+
+onChangeCardCvv(e) {
+  this.setState({cvv: e.target.value});
+}
+
+onSubmit(e) {
+  e.preventDefault();
+
+  const { phone, networkType, purchaseType, saveDetails, amount } = this.state;
+
+   if(networkType == '0' || purchaseType == '0') return this.setState({ error: 'Invalid form data filled' });
+
+ 
+  if(saveDetails){
+    
+    this.setState({ loading: true, error: '' })
+
+    const details = {
+      phone: phone,
+      networkType: networkType,
+      purchaseType: purchaseType,
+      amount: amount
+    }
 
 
+ axios.post(`${data.host}api/v1/agent/beneficiary/add?token=${data.token}`, details)
+        .then(res => {
+          this.setState({ loading: false, error: 'Beneficiary Successfully added'});
+          $('#mediumModal').modal('show');
+        }).catch(err => {
+          this.setState({ loading: false, error: err.toString() });
+        });
+
+        return;
+  }
+  this.setState({error: '' })
+  $('#mediumModal').modal('show');
+
+}
 
 
+onSubmit2(e) {
+  e.preventDefault();
 
+  const { cardNumber, month, year, cvv, amount, phone, purchaseType, networkType } = this.state;
+
+
+    
+    this.setState({ loading: true, error: '' })
+
+    const details = {
+      phone: phone,
+      networkType: networkType,
+      purchaseType: purchaseType,
+      amount: amount,
+      cardNumber: cardNumber,
+      month: month,
+      year: year,
+      cvv: cvv
+    }
+
+
+ axios.post(`${data.host}api/v1/agent/purchase/?token=${data.token}`, details)
+        .then(res => {
+          this.setState({ loading: false, error: 'Beneficiary Successfully added'});
+          $('#mediumModal').modal('hide');
+          $('#congratulationModal').modal('show');
+        }).catch(err => {
+          this.setState({ loading: false, error: err.toString() });
+        });
+
+
+}
+
+onPay(){
+  const { phone, networkType, purchaseType, amount, balance } = this.state;
+
+    if(Number(balance) < 100)return this.setState({ error: 'Please fund your wallet' })
+    this.setState({ loading: true, error: '' })
+
+    const details = {
+      phone: phone,
+      networkType: networkType,
+      purchaseType: purchaseType,
+      amount: amount
+    }
+
+
+ axios.post(`${data.host}api/v1/agent/wallet/pay?token=${data.token}`, details)
+        .then(res => {
+          this.setState({ loading: false}); 
+          $('#mediumModal').modal('hide');
+          $('#congratulationModal').modal('show');
+        }).catch(err => {
+          this.setState({ loading: false, error: err.toString() });
+        });
+
+
+}
+
+
+onPayCard(cardId){
+  const { phone, networkType, purchaseType, amount } = this.state;
+
+    
+    this.setState({ loading: true, error: '' })
+
+    const details = {
+      phone: phone,
+      networkType: networkType,
+      purchaseType: purchaseType,
+      amount: amount,
+      card: cardId
+    }
+
+
+ axios.post(`${data.host}api/v1/agent/card/pay?token=${data.token}`, details)
+        .then(res => {
+          this.setState({ loading: false}); 
+          $('#mediumModal').modal('hide');
+          $('#congratulationModal').modal('show');
+        }).catch(err => {
+          this.setState({ loading: false, error: err.toString() });
+        });
+
+
+}
+
+cardsView() {
+  return this.state.cards.map((t, index) => {
+       return <Cards {...t} i={index} pay={this.onPayCard} key={t.id}/>
+      })
 }
 
         Loaderview() {
@@ -76,18 +261,18 @@ export class Profile extends Component {
                 </div>
                 <div className="card-body pb-5">
 
-                <form>
+                <form onSubmit={this.onSubmit}>
                   <div className="row">
                     <div className="form-group col-6">
                       <label for="account_number">Phone Number</label>
-                      <input id="account_number" placeholder="Enter Your Phone Number" required type="tel" className="form-control" name="phone_number" autofocus />
+                      <input id="account_number" minLength="11" maxLength="11" onChange={this.onChangePhone} value={this.state.phone} placeholder="Enter Your Phone Number" required type="phone" className="form-control" name="phone_number" autofocus />
                     </div>
                     <div className="form-group col-6">
                       <label>Airtime/ Data Purchase</label>
-                      <select className="form-control selectric">
-                        <option>Select Purchase Type</option>
-                        <option>Airtime</option>
-                        <option>Data</option>
+                      <select className="form-control" onChange={this.onChangePurchaseType} required>
+                        <option option="0">Select Purchase Type</option>
+                        <option option="4">Airtime</option>
+                        <option option="5">Data</option>
                       </select>
                     </div>
                   </div>
@@ -95,33 +280,39 @@ export class Profile extends Component {
                   <div className="row">
                     <div className="form-group col-6">
                       <label>Select Network Provider</label>
-                      <select className="form-control selectric">
-                        <option>MTN NG</option>
-                        <option>Globalcom</option>
-                        <option>Airtel</option>
-                        <option>9mobile</option>
+                      <select className="form-control"onChange={this.onChangeNetworkType} required>
+                      <option option="0">Select Network</option>
+                        <option option="1">MTN NG</option>
+                        <option option="2">Globalcom</option>
+                        <option option="3">Airtel</option>
+                        <option option="4">9mobile</option>
                       </select>
                     </div>
 
                     <div className="form-group col-6">
                       <label for="amount">Amount</label>
-                      <input id="amount" placeholder="Enter Amount" required type="number" className="form-control" name="amount" />
+                      <input id="amount" placeholder="Enter Amount" min="100" onChange={this.onChangeAmount} value={this.state.amount} required type="number" className="form-control" name="amount" />
                     </div>
                   </div>
 
                   <div className="form-group">
                     <div className="custom-control custom-checkbox">
-                      <input type="checkbox" name="save_details" className="custom-control-input" id="save_details" />
+                      <input type="checkbox" name="save_details" className="custom-control-input" onChange={this.onChangeSaveDetails} id="save_details" />
                       <label className="custom-control-label" for="save_details">Save beneficiary details</label>
                     </div>
                   </div>
 
                   <div className="form-group">
-                    <button type="submit" className="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#mediumModal">
+                   {this.state.loading? this.Loaderview() : <button type="submit" className="btn btn-primary btn-lg btn-block">
                       Make Purchase
-                    </button>
+                    </button>}
                   </div>
                 </form>
+                <div className="text-center p-t-30">
+																	<p className="txt1">
+																		{this.state.error}
+																	</p>
+                                  </div>
                 </div>
                 </div>
             </div>
@@ -133,10 +324,10 @@ export class Profile extends Component {
                 </div>
                 <div className="card-body">
                   <div className="card img-fluid">
-                    <img className="card-img-top" src="../assets/img/kakudi_card_bg.svg" alt="Card image" style={{width:"100%"}} />
+                    <img className="card-img-top" src="../assets/img/kakudi_card_bg.svg" alt="Card" style={{width:"100%"}} />
                     <div className="card-img-overlay">
                       <p className="card-text text-white">Current Balance</p>
-                      <h4 className="card-title text-white my-4">&#8358; 5,000.00</h4>
+                      <h4 className="card-title text-white my-4">&#8358; {this.state.balance}</h4>
                       <p className="card-title text-light mt-3"><Link to="/add-funds" className="text-light">Add funds <i className="fa fa-plus-circle"></i></Link></p>
                     </div>
                   </div>
@@ -195,15 +386,15 @@ export class Profile extends Component {
 
                   
                   <div id="nav-tab-card" className="tab-pane fade show active">
-                    <form role="form">
+                    <form onSubmit={this.onSubmit2}>
                       <div className="form-group">
                         <label for="cardNumber">Card number</label>
                         <div className="input-group"> 
-                          <input type="text" name="cardNumber" placeholder="Your card number" className="form-control" required />
+                          <input type="text" name="cardNumber" onChange={this.onChangeCardNumber} value={this.state.cardNumber} minLength="15" maxLength="15" placeholder="Your card number" className="form-control" required />
                           <div className="input-group-append">
                             <span className="input-group-text text-muted">
-                                                        <i className="fa fa-cc-visa mx-1"></i>
-                                                        <i className="fa fa-cc-amex mx-1"></i>
+                                                       {/* <i className="fa fa-cc-visa mx-1"></i>
+                                                        <i className="fa fa-cc-amex mx-1"></i>*/}
                                                         <i className="fa fa-cc-mastercard mx-1"></i>
                                                     </span>
                           </div>
@@ -214,8 +405,8 @@ export class Profile extends Component {
                           <div className="form-group">
                             <label><span className="hidden-xs">Expiration</span></label>
                             <div className="input-group">
-                              <input type="number" placeholder="MM" name="" className="form-control" required />
-                              <input type="number" placeholder="YY" name="" className="form-control" required />
+                              <input type="number" placeholder="MM" name="" onChange={this.onChangeCardExpiryMonth} value={this.state.month} maxLength="2" className="form-control" required />
+                              <input type="number" placeholder="YY" name="" onChange={this.onChangeCardExpiryYear} value={this.state.year} maxLength="2" className="form-control" required />
                             </div>
                           </div>
                         </div>
@@ -224,15 +415,20 @@ export class Profile extends Component {
                             <label data-toggle="tooltip" title="Three-digits code on the back of your card">CVV
                                                         <i className="fa fa-question-circle"></i>
                                                     </label>
-                            <input type="text" required className="form-control" />
+                            <input type="text" required onChange={this.onChangeCardCvv} value={this.state.cvv} className="form-control" />
                           </div>
                         </div>
 
 
 
                       </div>
-                      <button type="button" className="subscribe btn btn-primary btn-block rounded-pill shadow-sm" data-toggle="modal" data-target="#congratulationModal"> Confirm  </button>
+                      { this.state.loading? this.Loaderview() : <button type="submit" className="subscribe btn btn-primary btn-block rounded-pill shadow-sm"> Confirm  </button>}
                     </form>
+                    <div className="text-center p-t-30">
+																	<p className="txt1">
+																		{this.state.error}
+																	</p>
+                                  </div>
                   </div>
                  
 
@@ -240,7 +436,7 @@ export class Profile extends Component {
                   <div id="nav-tab-wallet" className="tab-pane fade">
                     <p>Make Purchasing using funds in Your wallet</p>
                     <p>
-                      <button type="button" className="btn btn-primary rounded-pill"> Pay with Wallet</button>
+                      <button type="button" onClick={this.onPay} className="btn btn-primary rounded-pill"> Pay with Wallet</button>
                     </p>
                     <p className="text-muted">Please do add funds to your wallet to complete this transaction. <Link to="/add-funds">Add Funds Now</Link></p>
                   </div>
@@ -248,24 +444,8 @@ export class Profile extends Component {
                   <div id="nav-tab-cards" className="tab-pane fade">
                     <div className="summary-item card-body">
                       <ul className="list-unstyled list-unstyled-border">
-                        <a href="#"><li className="media mb-3">
-                          <div className="rounded-circle bg-light p-3 mr-3">
-                            <i className="fas fa-credit-card"></i>
-                          </div>
-                          <div className="media-body">
-                            <div className="media-title">Ecobank Nigeria</div>
-                            <div className="text-small text-muted">5123**********1234 <div className="bullet"></div> Expires 01/25</div>
-                          </div>
-                        </li></a>
-                        <Link to=""><li className="media mb-3">
-                          <div className="rounded-circle bg-light p-3 mr-3">
-                            <i className="fas fa-credit-card"></i>
-                          </div>
-                          <div className="media-body">
-                            <div className="media-title">GT Bank Plc</div>
-                            <div className="text-small text-muted">4123**********1235 <div className="bullet"></div> Expires 02/23</div>
-                          </div>
-                        </li></Link>
+                       {this.cardsView()}
+                      
                       </ul>
                       <Link to="/add-card"><div className="card-footer bg-whitesmoke text-center">
                         Add a new card <i className="fa fa-plus-circle"></i>
@@ -306,7 +486,7 @@ export class Profile extends Component {
 
         <div className="card-body mx-auto">
           <p className="text-center font-weight-bold">Transaction successful!</p>
-          <a className="btn btn-outline-primary py-2 btn-lg btn-block rounded" href="index.html">Return Home</a>
+          <Link className="btn btn-outline-primary py-2 btn-lg btn-block rounded" to="/">Return Home</Link>
 
         </div>
       </div>
