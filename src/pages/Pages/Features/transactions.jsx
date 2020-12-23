@@ -3,8 +3,25 @@ import axios from 'axios';
 import $ from 'jquery';
 import { Link } from 'react-router-dom';
 import Chart from 'chart.js';
+import moment from 'moment';
 import data from '../../../components/constants';
 import Loading from './loader';
+
+
+const Transaction = props => (
+  <tr>
+  <td>
+    {props.i}
+  </td>
+  <td>{props.title}</td>
+  <td className="align-middle">{props.transaction_type == 1? 'Transfer' : props.transaction_type == 2? 'Topup' : props.transaction_type == 3? 'Withdraw' : props.transaction_type == 4? 'Airtime recharge' : props.transaction_type == 4? 'Data recharge' : ''} </td>
+  <td className="">{props.amount}</td>
+  <td>{moment(props.date_added).format('YYYY MMM DD')}</td>
+  <td><div className="badge badge-warning">{props.status == 1? 'Successful' : 'Failed'}</div></td>
+  <td><a href="#/" className="btn btn-secondary">Detail</a></td>
+</tr>
+
+)
 
 export class Profile extends Component {
    constructor(props) {
@@ -12,38 +29,40 @@ export class Profile extends Component {
  
          
          this.state = {
-             name: '',
-             image: '',
-             logTime: '',
-             state: '',
-             metricNo:'',
-             lga: '',
-             department: '',
-             programme: '',
-             gender: '',
-             loading: false,
-             student: []
+          loading: true,
+          transactions: []
          }
  }
   componentDidMount() {
    
-    $(document).ready(() => {
+    axios.get(`${data.host}api/v1/transactions?token=${data.token}`)
+    .then(response => {
+      // eslint-disable-next-line
+      this.setState({transactions: response.data, loading: false});
+      $(document).ready(() => {
         $('#table-1').DataTable({ 
             lengthChange: true,
             dom: 'Bfrtip',
           });
           
         });
+    }).catch((error) => this.setState({error: error.toString(), loading: false}));
 
-      axios.get(`${data.host}api/v1/student?token=${data.token}`)
+    axios.get(`${data.host}api/v1/transactions/spent?token=${data.token}`)
+    .then(res => {
+      axios.get(`${data.host}api/v1/transactions/recieved?token=${data.token}`)
       .then(response => {
         // eslint-disable-next-line
-        this.setState({student: response.data[0], state:response.data[0].state, lga: response.data[0].lga, metricNo: response.data[0].metricNo, department: response.data[0].department, programme: response.data[0].programme, gender: response.data[0].gender, image: response.data[0].image, name: response.data[0].firstname + ' ' + response.data[0].othername, logTime: response.data[0].last_logout})
+        this.loadchat2(res.data, response.data)
       }).catch((error) => {console.log(error)});
-  
+    }).catch((error) => {console.log(error)});
 
-      var transactChart = document.getElementById('transactionsChart').getContext('2d');
-var transactionsChart = new Chart(transactChart, {
+
+}
+
+loadchat2(spent, received) {
+let transactChart = document.getElementById('transactionsChart').getContext('2d');
+let transactionsChart = new Chart(transactChart, {
     // The type of chart we want to create
     type: 'pie',
 
@@ -52,7 +71,7 @@ var transactionsChart = new Chart(transactChart, {
         labels: ['TOTAL SPENDING', 'TOTAL MONEY RECEIVED'],
         datasets: [{
             label: 'Salary Projection',
-            data: [65, 35],
+            data: [spent, received],
             backgroundColor: [
                 '#FFB946',
                 '#2ED47A'
@@ -69,11 +88,14 @@ var transactionsChart = new Chart(transactChart, {
 
 
 
-
-
 }
 
-        Loaderview() {
+transactionsView() {
+return this.state.transactions.map((t, index) => {
+     return <Transaction {...t} i={index}  key={t.id}/>
+    })
+}
+      Loaderview() {
         return this.state.loading? <Loading /> : null
         
     }
@@ -99,7 +121,7 @@ var transactionsChart = new Chart(transactChart, {
                 </div>
                 <div className="card-body">
                   <div className="table-responsive">
-                    <table className="table table-striped" id="table-1">
+                  <table className="table table-striped" id="table-1">
                       <thead>
                         <tr>
                           <th className="text-center">
@@ -114,21 +136,15 @@ var transactionsChart = new Chart(transactChart, {
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td>
-                            1
-                          </td>
-                          <td>Airtime purchase</td>
-                          <td className="align-middle">9 Mobile Airtime </td>
-                          <td className="">5,000</td>
-                          <td>2018-01-20</td>
-                          <td><div className="badge badge-warning">Processing</div></td>
-                          <td><a href="#" className="btn btn-secondary">Detail</a></td>
-                        </tr>
-                        
+                       {this.transactionsView()}
                       </tbody>
                     </table>
-                    
+                    {this.Loaderview()}
+                        <div className="text-center p-t-30">
+																	<p className="txt1">
+																		{this.state.error}
+																	</p>
+                                  </div>
                   </div>
                 </div>
               </div>

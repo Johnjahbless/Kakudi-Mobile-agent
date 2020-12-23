@@ -17,6 +17,7 @@ import "dropzone/dist/min/dropzone.min.css";
 import "bootstrap-social/bootstrap-social.css";
 
 import "./assets/css/style.css";
+import "./assets/css/custom.css";
 import "@fortawesome/fontawesome-free/css/all.css";
 
 import "summernote/dist/summernote-bs4.css";

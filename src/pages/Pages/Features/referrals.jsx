@@ -1,54 +1,45 @@
 import React, { Component } from "react";
 import axios from 'axios';
-import $ from 'jquery';
 import { Link } from 'react-router-dom';
-import Chart from 'chart.js';
 import data from '../../../components/constants';
 import Loading from './loader';
 
 export class Profile extends Component {
    constructor(props) {
          super(props);
- 
+
+        this.myFunction = this.myFunction.bind(this);
          
-         this.state = {
+         this.state = { 
              name: '',
              image: '',
-             logTime: '',
-             state: '',
-             metricNo:'',
-             lga: '',
-             department: '',
-             programme: '',
-             gender: '',
-             loading: false,
-             student: []
+             refferalId: '',
+             kid: '',
+             copy: 'Copy Code',
+             referralPoint: 0,
+             loading: false
          }
  }
   componentDidMount() {
    
-    $(document).ready(() => {
-        $('#table-1').DataTable({ 
-            lengthChange: true,
-            dom: 'Bfrtip',
-          });
-          
-        });
-
-      axios.get(`${data.host}api/v1/student?token=${data.token}`)
-      .then(response => {
-        // eslint-disable-next-line
-        this.setState({student: response.data[0], state:response.data[0].state, lga: response.data[0].lga, metricNo: response.data[0].metricNo, department: response.data[0].department, programme: response.data[0].programme, gender: response.data[0].gender, image: response.data[0].image, name: response.data[0].firstname + ' ' + response.data[0].othername, logTime: response.data[0].last_logout})
-      }).catch((error) => {console.log(error)});
-  
-
-      
-
-
-
-
+        axios.get(`${data.host}api/v1/agent?token=${data.token}`)
+        .then(response => {
+          // eslint-disable-next-line
+          this.setState({image: response.data[0].image, name: response.data[0].firstname + ' ' + response.data[0].lastname, refferalId: response.data[0].referral, referralPoint: response.data[0].referralPoint, kid: response.data[0].kid})
+        }).catch((error) => {});
 
 }
+
+myFunction() {
+  var copyText = document.getElementById("myInput");
+  copyText.select();
+  copyText.setSelectionRange(0, 99999);
+  document.execCommand("copy");
+  
+  this.setState({copy: 'Copied'})
+}
+
+
 
         Loaderview() {
         return this.state.loading? <Loading /> : null
@@ -75,17 +66,18 @@ export class Profile extends Component {
                   <div className="col-12 col-md-12 col-lg-12">
                     <div className="profile-widget">
                       <div className="profile-widget-description">
-                        <img alt="image" src="../assets/img/avatar/avatar-1.png" className="rounded-circle w-25 mx-auto d-block" />
-                        <div className="profile-widget-name text-center mt-3">Bright Chidiebere Emeka <br/> <div className="text-muted d-inline font-weight-normal">Current points</div>  <span style={{color:"red"}}> 12</span></div>
+                        <img alt="" src={this.state.image} className="rounded-circle w-25 mx-auto d-block" />
+                        <div className="profile-widget-name text-center mt-3">{this.state.name} <br/> <div className="text-muted d-inline font-weight-normal">Current points</div>  <span style={{color:"red"}}> {this.state.referralPoint}</span></div>
 
                       </div>
                       <div className="card-footer text-center w-50 mx-auto">
 
                         <div className="form-group">
                           <div className="input-group mb-3">
-                            <input type="text" className="form-control" placeholder="1125445635541" disabled value="1125445635541" aria-label="" />
+                            <input type="text" className="form-control" id="myInput" placeholder={window.location.host+'/auth/signup/?referral='+this.state.kid} value={window.location.host+'/auth/signup/?referral='+this.state.kid} aria-label="" />
                             <div className="input-group-append">
-                              <button href="#" className="btn btn-primary" type="button">Copy Code <i className="fas fa-copy"></i></button>
+                              <button onClick={this.myFunction} className="btn btn-primary" type="button">{this.state.copy} <i className="fas fa-copy"></i>
+                            </button>
                             </div>
                           </div>
                         </div>

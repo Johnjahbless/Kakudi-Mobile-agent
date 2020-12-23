@@ -35,6 +35,7 @@ import Audit from "./pages/Pages/Features/audit-trail";
 import Activities from "./pages/Pages/Features/Activities";*/
 import MyActivities from "./pages/Pages/Features/my-activites";
 import ChangePassword from "./pages/Pages/Features/change-password";
+import Ticket from "./pages/Pages/Features/ticket";
 import history from "./history"; 
 
 function App() {
@@ -69,6 +70,7 @@ function App() {
           <Route path="/transactions" exact component={Transactions} />{" "}
           <Route path="/support" exact component={Support} />{" "}
           <Route path="/ka-kulator" exact component={Kulator} />{" "}
+          <Route path="/ticket/:id" exact component={Ticket} />{" "}
 
        { /*  <Route path="/agent-management" exact component={AgentManagement} />{" "}
           <Route path="/resolve-issues" exact component={ResolveIssues} />{" "}

@@ -225,7 +225,7 @@ onPayCard(cardId){
         }).catch(err => {
           this.setState({ loading: false, error: err.toString() });
         });
-
+ 
 
 }
 
@@ -405,8 +405,8 @@ cardsView() {
                           <div className="form-group">
                             <label><span className="hidden-xs">Expiration</span></label>
                             <div className="input-group">
-                              <input type="number" placeholder="MM" name="" onChange={this.onChangeCardExpiryMonth} value={this.state.month} maxLength="2" className="form-control" required />
-                              <input type="number" placeholder="YY" name="" onChange={this.onChangeCardExpiryYear} value={this.state.year} maxLength="2" className="form-control" required />
+                              <input type="text" placeholder="MM" name="" onChange={this.onChangeCardExpiryMonth} value={this.state.month} maxLength="2" minLength="2" className="form-control" required />
+                              <input type="text" placeholder="YY" name="" onChange={this.onChangeCardExpiryYear} value={this.state.year} maxLength="2" minLength="2" className="form-control" required />
                             </div>
                           </div>
                         </div>
@@ -415,7 +415,7 @@ cardsView() {
                             <label data-toggle="tooltip" title="Three-digits code on the back of your card">CVV
                                                         <i className="fa fa-question-circle"></i>
                                                     </label>
-                            <input type="text" required onChange={this.onChangeCardCvv} value={this.state.cvv} className="form-control" />
+                            <input type="text" required onChange={this.onChangeCardCvv} value={this.state.cvv} maxLength="3" minLength="3" className="form-control" />
                           </div>
                         </div>
 
