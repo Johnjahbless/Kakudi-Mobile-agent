@@ -91,6 +91,8 @@ export class Profile extends Component {
 
     axios.post(`${data.host}api/v1/agent/fund/wallet?token=${data.token}`, details)
       .then(res => {
+        console.log(res.data)
+        if(res.data === '200') return this.setState({ loading: false, error: 'Invalid transaction' });
         this.setState({ loading: false, error: 'Successfull' });
         $('#mediumModal').modal('hide');
         $('#congratulationModal').modal('show');
