@@ -25,7 +25,7 @@ export default class Settings extends Component  {
 
   componentDidMount() {
    
-      axios.get(`${data.host}api/v1/student?token=${data.token}`)
+      axios.get(`${data.host}api/v1/agent?token=${data.token}`)
       .then(response => {
         // eslint-disable-next-line
         this.setState({recentPassword: response.data[0].password, loading: false})
@@ -54,7 +54,7 @@ onSubmit(e) {
     }
 
 
- axios.post(`${data.host}api/v1/student/password/update?token=${data.token}`, details)
+ axios.post(`${data.host}api/v1/agent/password/update?token=${data.token}`, details)
         .then(res => {
           this.setState({ loading: false, error: 'Successfully updated', oldPassword: '', newPassword: '', confirmPassword: '' });
           
@@ -96,7 +96,7 @@ render() {
               </div>
             </div>
             <div className="col-md-8">
-              <form id="setting-form">
+              <form onSubmit={this.onSubmit}>
                 <div className="card" id="settings-card">
                   <div className="card-header">
                     <h4>Password</h4>
@@ -106,29 +106,29 @@ render() {
                     <div className="form-group row align-items-center">
                       <label for="current_password" className="form-control-label col-sm-3 text-md-right">Current Password</label>
                       <div className="col-sm-6 col-md-9">
-                        <input type="password" name="current_password" className="form-control" id="current_password" autofocus />
+                        <input type="password" name="current_password" onChange={this.onChangeOldPassword} value={this.state.oldPassword} className="form-control" id="current_password" autofocus required/>
                       </div>
                     </div>
                     <div className="form-group row align-items-center">
                       <label for="agent_email" className="form-control-label col-sm-3 text-md-right">New Password</label>
                       <div className="col-sm-6 col-md-9">
-                        <input type="password" name="new_password" className="form-control" id="new_password" />
-                        <div className="form-text text-muted">Your password should be atleast 8 characters long</div>
+                        <input type="password" name="new_password"  onChange={this.onChangeNewPassword} value={this.state.newPassword} className="form-control" id="new_password" required/>
+                        <div className="form-text text-muted">Your password should be atleast 6 characters long</div>
                       </div>
                     </div>
 
                     <div className="form-group row align-items-center">
                       <label for="confirm_password" className="form-control-label col-sm-3 text-md-right">Confirm Password</label>
                       <div className="col-sm-6 col-md-9">
-                        <input type="password" name="confirm_password" className="form-control" id="confirm_password" />
+                        <input type="password" name="confirm_password"  onChange={this.onChangeConfirmPassword} value={this.state.confirmPassword} className="form-control" id="confirm_password" required/>
                       </div>
                     </div>
 
                   </div>
 
                   <div className="card-footer bg-whitesmoke text-md-right">
-                    <button className="btn btn-primary" id="save-btn">Save Changes</button>
-                    <button className="btn btn-secondary" type="button">Reset</button>
+                    {this.state.loading? this.Loaderview() : <button className="btn btn-primary" type="submit" id="save-btn">Save Changes</button>
+                    }
                   </div>
                 </div>
               </form>

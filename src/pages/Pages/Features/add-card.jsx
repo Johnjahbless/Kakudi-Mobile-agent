@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import axios from 'axios';
 import $ from 'jquery';
 import { Link } from 'react-router-dom';
-import Chart from 'chart.js';
 import data from '../../../components/constants';
 import Loading from './loader';
 
@@ -10,45 +9,66 @@ export class Profile extends Component {
    constructor(props) {
          super(props);
  
+         this.onChangeCardNumber = this.onChangeCardNumber.bind(this);
+         this.onChangeCardExpiryMonth = this.onChangeCardExpiryMonth.bind(this);
+         this.onChangeCardExpiryYear = this.onChangeCardExpiryYear.bind(this);
+         this.onChangeCardCvv = this.onChangeCardCvv.bind(this);
+         this.onSubmit = this.onSubmit.bind(this);
          
-         this.state = {
-             name: '',
-             image: '',
-             logTime: '',
-             state: '',
-             metricNo:'',
-             lga: '',
-             department: '',
-             programme: '',
-             gender: '',
-             loading: false,
-             student: []
+         this.state = { 
+           cardNumber: '',
+           month: '',
+           year: '',
+           cvv: '',
+           loading: false
          }
  }
-  componentDidMount() {
-   
-    $(document).ready(() => {
-        $('#table-1').DataTable({ 
-            lengthChange: true,
-            dom: 'Bfrtip',
-          });
-          
-        });
+  componentDidMount() {}
 
-      axios.get(`${data.host}api/v1/student?token=${data.token}`)
-      .then(response => {
-        // eslint-disable-next-line
-        this.setState({student: response.data[0], state:response.data[0].state, lga: response.data[0].lga, metricNo: response.data[0].metricNo, department: response.data[0].department, programme: response.data[0].programme, gender: response.data[0].gender, image: response.data[0].image, name: response.data[0].firstname + ' ' + response.data[0].othername, logTime: response.data[0].last_logout})
-      }).catch((error) => {console.log(error)});
+  componentWillUnmount() {
+    $('#congratulationModal').modal('hide');
+   }
+
+   onChangeCardNumber(e) {
+    this.setState({cardNumber: e.target.value});
+  }
   
-
+  onChangeCardExpiryMonth(e) {
+    this.setState({month: e.target.value});
+  }
+  
+  onChangeCardExpiryYear(e) {
+    this.setState({year: e.target.value});
+  }
+  
+  onChangeCardCvv(e) {
+    this.setState({cvv: e.target.value});
+  }
+  
+  onSubmit(e) {
+    e.preventDefault();
+  
+    const { cardNumber, month, year, cvv } = this.state;
+  
+     
       
-
-
-
-
-
-}
+      this.setState({ loading: true, error: '' })
+  
+      const details = { cardNumber, month, year, cvv }
+  
+  
+   axios.post(`${data.host}api/v1/agent/card/add?token=${data.token}`, details)
+          .then(res => {
+            if (res.data == '200') return this.setState({ loading: false, error: "This card details already exit"});
+            this.setState({ loading: false, error: 'Card Successfully added'});
+            $('#mediumModal').modal('show');
+          }).catch(err => {
+            this.setState({ loading: false, error: err.toString() });
+          });
+  
+    }
+ 
+  
 
         Loaderview() {
         return this.state.loading? <Loading /> : null
@@ -78,15 +98,15 @@ export class Profile extends Component {
                 <div className="card-body pb-5">
                   <p>For security reasons. this card will be debited with a random amount not more than NGN 50. This amount will be credited to your Kakudi Wallet upon verification</p>
 
-                              <form >
+                            
 
                                   <div id="nav-tab-card" className="tab-pane fade show active">
-                                    <form role="form">
+                                    <form onSubmit={this.onSubmit}>
                                       <div className="form-group">
                                         <label for="cardNumber">Card number</label>
                                         <div className="input-group">
-                                          <input type="text" name="cardNumber" placeholder="Your card number" className="form-control" required />
-                                          <div className="input-group-append">
+                                        <input type="text" name="cardNumber" onChange={this.onChangeCardNumber} value={this.state.cardNumber} minLength="15" maxLength="15" placeholder="Your card number" className="form-control" required />
+                          <div className="input-group-append">
                                             <span className="input-group-text text-muted">
                                                                         <i className="fa fa-cc-visa mx-1"></i>
                                                                         <i className="fa fa-cc-amex mx-1"></i>
@@ -100,9 +120,9 @@ export class Profile extends Component {
                                           <div className="form-group">
                                             <label><span className="hidden-xs">Expiration</span></label>
                                             <div className="input-group">
-                                              <input type="number" placeholder="MM" name="" className="form-control" required />
-                                              <input type="number" placeholder="YY" name="" className="form-control" required />
-                                            </div>
+                                            <input type="text" placeholder="MM" name="" onChange={this.onChangeCardExpiryMonth} value={this.state.month} maxLength="2" minLength="2" className="form-control" required />
+                              <input type="text" placeholder="YY" name="" onChange={this.onChangeCardExpiryYear} value={this.state.year} maxLength="2" minLength="2" className="form-control" required />
+                            </div>
                                           </div>
                                         </div>
                                         <div className="col-sm-4">
@@ -110,19 +130,22 @@ export class Profile extends Component {
                                             <label data-toggle="tooltip" title="Three-digits code on the back of your card">CVV
                                                                         <i className="fa fa-question-circle"></i>
                                                                     </label>
-                                            <input type="text" required className="form-control" />
-                                          </div>
+                                                                    <input type="text" required onChange={this.onChangeCardCvv} value={this.state.cvv} maxLength="3" minLength="3" className="form-control" />
+                             </div>
                                         </div>
 
 
 
                                       </div>
-                                      <button type="button" className="subscribe btn btn-primary btn-block rounded-pill shadow-sm" data-toggle="modal" data-target="#congratulationModal"> PROCEED  </button>
+                                      { this.state.loading? this.Loaderview() : <button type="submit" className="subscribe btn btn-primary btn-block rounded-pill shadow-sm"> PROCEED  </button>}
                                     </form>
+                                    <div className="text-center p-t-30">
+																	<p className="txt1">
+																		{this.state.error}
+																	</p>
+                                  </div>
                                   </div>
 
-
-                </form>
                 </div>
                 </div>
               </div>

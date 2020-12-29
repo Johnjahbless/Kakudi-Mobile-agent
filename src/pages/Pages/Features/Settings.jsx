@@ -8,62 +8,100 @@ import Loading from './loader';
 export default class Settings extends Component  {
   constructor(props) {
          super(props);
-        this.onChangeNewPassword = this.onChangeNewPassword.bind(this);
-         this.onChangeConfirmPassword = this.onChangeConfirmPassword.bind(this);
-         this.onChangeOldPassword = this.onChangeOldPassword.bind(this);
+        this.onChangeName = this.onChangeName.bind(this);
+         this.onChangeEmail = this.onChangeEmail.bind(this);
+         this.onChangePhone = this.onChangePhone.bind(this);
+         this.handleImageUpload = this.handleImageUpload.bind(this);
          this.onSubmit = this.onSubmit.bind(this); 
+         this.onSelect = this.onSelect.bind(this); 
  
          this.state = {
-             newPassword: '',
-             oldPassword: '',
-             confirmPassword: '',
-             recentPassword: '',
+             image: '',
+             name: '',
+             email: '',
+             phone: '',
              error:'',
+             fileName: 'Select profile picture',
              loading: false
          }
      } 
 
   componentDidMount() {
    
-      axios.get(`${data.host}api/v1/student?token=${data.token}`)
-      .then(response => {
-        // eslint-disable-next-line
-        this.setState({recentPassword: response.data[0].password, loading: false})
-      }).catch((error) => {console.log(error)});
+    axios.get(`${data.host}api/v1/agent?token=${data.token}`)
+    .then(response => {
+      // eslint-disable-next-line
+      this.setState({image: response.data[0].image, name: response.data[0].firstname + ' ' + response.data[0].lastname, phone: response.data[0].phone, email: response.data[0].email})
+    }).catch((error) => {console.log(error)});
   }
 
 
-onChangeConfirmPassword(e) {
-  this.setState({confirmPassword: e.target.value});
+onChangeName(e) {
+  this.setState({name: e.target.value});
 }
-     onChangeNewPassword(e) {
-  this.setState({newPassword: e.target.value});
+     onChangeEmail(e) {
+  this.setState({email: e.target.value});
 }
-   onChangeOldPassword(e) {
-  this.setState({oldPassword: e.target.value});
+   onChangePhone(e) {
+  this.setState({phone: e.target.value});
 }
+onSelect(e) {
+  const { files } = document.querySelector('input[type="file"]');
+  
+  this.setState({fileName: files[0].name});
+}
+
 onSubmit(e) {
      e.preventDefault();
-     const { oldPassword, newPassword, recentPassword, confirmPassword} = this.state;
- if (md5(oldPassword) !== recentPassword) return this.setState({ error: 'Invalid password'});
- if (newPassword !== confirmPassword) return this.setState({ error: 'Your passwords does not match'});
+     
+     this.setState({loading: true, error: ''});
+     const { files } = document.querySelector('input[type="file"]');
 
-    this.setState({loading: true, error: ''});
-    const details = {
-      password: newPassword
-    }
-
-
- axios.post(`${data.host}api/v1/student/password/update?token=${data.token}`, details)
-        .then(res => {
-          this.setState({ loading: false, error: 'Successfully updated', oldPassword: '', newPassword: '', confirmPassword: '' });
-          
-        }).catch(err => {
-          this.setState({ loading: false, error: err.toString() });
-        });
-
-      
+     if (files.length !== 0) this.handleImageUpload(); else this.sendToDatabase();
 }
+
+        handleImageUpload(e) {
+          const { files } = document.querySelector('input[type="file"]')
+          const formData = new FormData();
+          formData.append('file', files[0]);
+          // replace this with your upload preset name
+          formData.append('upload_preset', 'dbz1yfes');
+          const options = {
+            method: 'POST',
+            body: formData
+          };
+      
+          return fetch('https://api.Cloudinary.com/v1_1/jdlab-ng/image/upload', options)
+            .then(res => res.json())
+            .then(res => {
+              this.sendToDatabase(res.secure_url)
+      
+      
+            }).catch(err => this.setState({ loading: false, error: err.toString() }));
+        }
+      
+      
+
+        sendToDatabase(imageUrl) {
+          const { phone, email, name, image } = this.state;
+      
+          const details = {
+            phone: phone,
+            email: email,
+            name: name,
+            image: imageUrl !== undefined ? imageUrl : image
+          }
+      
+      
+       axios.post(`${data.host}api/v1/agent/update?token=${data.token}`, details)
+              .then(res => {
+                window.location.reload()
+                
+              }).catch(err => {
+                this.setState({ loading: false, error: err.toString() });
+              });
+      
+        }
      Loaderview() {
         return this.state.loading? <Loading /> : null
         
@@ -95,7 +133,7 @@ render() {
               </div>
             </div>
             <div className="col-md-8">
-              <form id="setting-form">
+              <form onSubmit={this.onSubmit}>
                 <div className="card" id="settings-card">
                   <div className="card-header">
                     <h4>Edit Profile</h4>
@@ -105,38 +143,38 @@ render() {
                     <div className="form-group row align-items-center">
                       <label for="agent_name" className="form-control-label col-sm-3 text-md-right">Name</label>
                       <div className="col-sm-6 col-md-9">
-                        <input type="text" name="agent_name" value="Bright Emeka" disabled className="form-control" id="agent_name" />
+                        <input type="text" name="agent_name" onChange={this.onChangeName} value={this.state.name} className="form-control" id="agent_name" required/>
                       </div>
                     </div>
                     <div className="form-group row align-items-center">
                       <label for="agent_email" className="form-control-label col-sm-3 text-md-right">Email Address</label>
                       <div className="col-sm-6 col-md-9">
-                        <input type="email" name="agent_email" value="bright@jdlab.ng" className="form-control" id="agent_email" />
+                        <input type="email" name="agent_email" onChange={this.onChangeEmail} value={this.state.email}  className="form-control" id="agent_email" required/>
                       </div>
                     </div>
 
                     <div className="form-group row align-items-center">
                       <label for="agent_number" className="form-control-label col-sm-3 text-md-right">Phone Number</label>
                       <div className="col-sm-6 col-md-9">
-                        <input type="number" name="agent_number" value="07036393334" className="form-control" id="agent_number" />
+                        <input type="number" name="agent_number" onChange={this.onChangePhone} value={this.state.phone} minLength="11" maxLength="11"  className="form-control" id="agent_number" required/>
                       </div>
                     </div>
                     <div className="form-group row align-items-center">
                       <label className="form-control-label col-sm-3 text-md-right">Profile picture</label>
                       <div className="col-sm-6 col-md-9">
                         <div className="custom-file">
-                          <input type="file" name="agent_img" className="custom-file-input" id="agent_img" />
-                          <label className="custom-file-label">Select Profile picture</label>
+                          <input type="file" name="agent_img" onChange={this.onSelect} className="custom-file-input" id="agent_img" accept=".jpg,.png" />
+                          <label className="custom-file-label">{this.state.fileName}</label>
                         </div>
-                        <div className="form-text text-muted">The image must have a minimum size of 1MB</div>
+                        <div className="form-text text-muted">The image must have a maximum size of 1MB</div>
                       </div>
                     </div>
 
                   </div>
 
                   <div className="card-footer bg-whitesmoke text-md-right">
-                    <button className="btn btn-primary" id="save-btn">Save Changes</button>
-                    <button className="btn btn-secondary" type="button">Reset</button>
+                    {this.state.loading? this.Loaderview() : <button className="btn btn-primary" type="submit" id="save-btn">Save Changes</button>
+                    }
                   </div>
                 </div>
               </form>

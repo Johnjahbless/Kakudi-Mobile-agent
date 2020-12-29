@@ -62,7 +62,7 @@ export default class Activities extends Component  {
       componentDidMount() {
 
         
-      axios.get(`${data.host}api/v1/student/activities?token=${data.token}`)
+      axios.get(`${data.host}api/v1/agent/activities?token=${data.token}`)
       .then(response => {
         // eslint-disable-next-line
         this.setState({activities: response.data, loading: false})
