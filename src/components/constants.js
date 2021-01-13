@@ -7,7 +7,7 @@ const cookies = new Cookies();
 let userDetails = cookies.get('__sessions');
 
 const data = {
-    host: 'http://agentapi.kakudimobile.ng/',
+    host: 'http://localhost:5000/',
     token: userDetails !== undefined ? userDetails.token : null,
     id: userDetails !== undefined ? userDetails.id : null
 }

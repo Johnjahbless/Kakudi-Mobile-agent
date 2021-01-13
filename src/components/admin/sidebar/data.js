@@ -35,6 +35,13 @@ export const Data = {
             url: "/transactions"
 
         },
+        
+        {
+            name: 'Devices',
+            icon: 'fas fa-mobile-alt',
+            url: "/devices"
+
+        },
         {
             name: 'Support',
             icon: 'fas fa-headset',

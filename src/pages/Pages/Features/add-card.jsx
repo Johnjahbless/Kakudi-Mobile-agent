@@ -60,8 +60,8 @@ export class Profile extends Component {
    axios.post(`${data.host}api/v1/agent/card/add?token=${data.token}`, details)
           .then(res => {
             if (res.data == '200') return this.setState({ loading: false, error: "This card details already exit"});
-            this.setState({ loading: false, error: 'Card Successfully added'});
-            $('#mediumModal').modal('show');
+            this.setState({ loading: false, error: 'Card Successfully added', cardNumber: '', month: '', year: '', cvv: ''});
+            $('#congratulationModal').modal('show');
           }).catch(err => {
             this.setState({ loading: false, error: err.toString() });
           });
@@ -174,7 +174,7 @@ export class Profile extends Component {
                 <h4 className="mx-auto display-5 py-3">Congratulations!!!</h4>
 
                 <div className="card-body mx-auto">
-                  <p className="text-center font-weight-bold">Your have successfully added a Debit card to your wallet</p>
+                  <p className="text-center font-weight-bold">Your have successfully added a Debit card</p>
                   <Link to="/" className="btn btn-outline-primary py-2 btn-lg btn-block rounded" >Return Home</Link>
 
                 </div>

@@ -15,24 +15,12 @@ import Referral from "./pages/Pages/Features/referrals";
 import Transactions from "./pages/Pages/Features/transactions";
 import Support from "./pages/Pages/Features/support";
 import Kulator from "./pages/Pages/Features/ka-kulator";
+import DeviceManager from "./pages/Pages/Features/device-manager";
 
-
+import UnloadFund from "./pages/Pages/Features/unload-commision";
 
 import Settings from "./pages/Pages/Features/Settings";
 import { useLocation } from "react-router-dom";
-/*import AgentManagement from "./pages/Pages/Features/agent-management";
-import ResolveIssues from "./pages/Pages/Features/resolve-issues";
-import ManageCustomer from "./pages/Pages/Features/manage-customers";
-import WalletTopUp from "./pages/Pages/Features/wallet-top";
-import CustomerProfile from "./pages/Pages/Features/customer-profile";
-import UserAccessLevel from "./pages/Pages/Features/user-access-level";
-import DeviceManager from "./pages/Pages/Features/device-manager";
-import ServiceManager from "./pages/Pages/Features/service-management";
-import SpendAnalysis from "./pages/Pages/Features/spend-analysis";
-import SaleAnalysis from "./pages/Pages/Features/sales-analysis";
-import Statistics from "./pages/Pages/Features/logs";
-import Audit from "./pages/Pages/Features/audit-trail";
-import Activities from "./pages/Pages/Features/Activities";*/
 import MyActivities from "./pages/Pages/Features/my-activites";
 import ChangePassword from "./pages/Pages/Features/change-password";
 import Ticket from "./pages/Pages/Features/ticket";
@@ -64,6 +52,8 @@ function App() {
           <Route path="/recharge" exact component={Recharge} />{" "}
           <Route path="/add-card" exact component={AddCard} />{" "}
           <Route path="/add-funds" exact component={AddFund} />{" "}
+          <Route path="/unload" exact component={UnloadFund} />{" "}
+          <Route path="/devices" exact component={DeviceManager} />{" "}
           <Route path="/withdraw-money" exact component={WithdrawMoney} />{" "}
           <Route path="/wallet" exact component={Wallet} />{" "}
           <Route path="/referrals" exact component={Referral} />{" "}

@@ -1,49 +1,129 @@
 import React, { Component } from "react";
 import axios from 'axios';
 import $ from 'jquery';
+import moment from 'moment';
 import { Link } from 'react-router-dom';
-import Chart from 'chart.js';
 import data from '../../../components/constants';
 import Loading from './loader';
 
+
+
+
+const Activity = props => (
+  <tr>
+  <td>
+    {props.i}
+  </td>
+  <td>{props.firstName + ' ' + props.lastName}</td>
+  <td>{props.device}</td>
+  <td>{props.kid}</td>
+  <td>{moment(props.last_login).format('YYYY MMM DD')}</td>
+  <td><div className="badge badge-success">{props.status == 1? 'Active' : 'Blocked'}</div></td>
+  {/*<td>{props.status == 1 ? <button onClick={() => { props.deactivate(props.id) }} className="btn btn-secondary">Block device</button> : <button onClick={() => { props.activate(props.id) }} className="btn btn-secondary">Reset device</button>}</td>*/}
+</tr>
+)
 export class Profile extends Component {
    constructor(props) {
          super(props);
+
+         this.onActivate = this.onActivate.bind(this);
+         this.onDeActivate = this.onDeActivate.bind(this);
+         this.onChangeRole = this.onChangeRole.bind(this);
  
          
          this.state = {
-             name: '',
-             image: '',
-             logTime: '',
-             state: '',
-             metricNo:'',
-             lga: '',
-             department: '',
-             programme: '',
-             gender: '',
-             loading: false,
-             student: []
+             loading: true,
+             users: [],
+             years: [],
+             active: [],
+             blocked: [],
+             locked: [],
+             devices: [],
+             allDevices: []
          }
  }
   componentDidMount() {
-   
-    $(document).ready(() => {
-        $('#table-1').DataTable({ 
-            lengthChange: true,
-            dom: 'Bfrtip',
-          });
-          
-        });
 
-      axios.get(`${data.host}api/v1/student?token=${data.token}`)
+    axios.get(`${data.host}api/v1/devices?token=${data.token}`)
       .then(response => {
-        // eslint-disable-next-line
-        this.setState({student: response.data[0], state:response.data[0].state, lga: response.data[0].lga, metricNo: response.data[0].metricNo, department: response.data[0].department, programme: response.data[0].programme, gender: response.data[0].gender, image: response.data[0].image, name: response.data[0].firstname + ' ' + response.data[0].othername, logTime: response.data[0].last_logout})
-      }).catch((error) => {console.log(error)});
+        this.setState({ devices: response.data, active:response.data.filter(a => a.status == 1).length, blocked: response.data.filter(a => a.status == 3).length, locked: response.data.filter(a => a.status == 2).length, loading: false})
  
+        $(document).ready(() => {
+        $('#table-1').DataTable({ 
+          lengthChange: true,
+          dom: 'Bfrtip',
+        });
+      });
+      }).catch((error) => {console.log(error)});
 
+   
+    
+   }
 
+   onChangeRole(e) {
+    $('#table-1').dataTable().fnDestroy();
+     const role = e.target.value;
+     if(role == '0'){
+       this.setState({ devices: this.state.allDevices});
+       $(document).ready(() => {
+        $('#table-1').DataTable({ 
+          lengthChange: true,
+          dom: 'Bfrtip',
+        });
+      });
+      return;
+     };
 
+     this.setState({ devices: this.state.allDevices.filter(d => d.role == role)});
+     $(document).ready(() => {
+      $('#table-1').DataTable({ 
+        lengthChange: true,
+        dom: 'Bfrtip',
+      });
+    });
+   }
+
+   onActivate(id) {
+    this.setState({ loading: true, error: '' });
+
+    const details = {id: id};
+  
+    axios.post(`${data.host}api/v1/device/activate?token=${data.token}`, details)
+      .then(res => {
+      
+        axios.get(`${data.host}api/v1/devices?token=${data.token}`).then(res => {
+      
+          this.setState({devices: res.data, loading: false})
+        } ).catch((error) => {this.setState({error: error.toString(), loading: false})});
+  
+      }).catch(err => {
+        this.setState({ loading: false, error: err.toString() });
+      });
+   }
+
+   
+   onDeActivate(id) {
+    this.setState({ loading: true, error: '' });
+
+    const details = {id: id};
+  
+    axios.post(`${data.host}api/v1/device/deactivate?token=${data.token}`, details)
+      .then(res => {
+      
+        axios.get(`${data.host}api/v1/devices?token=${data.token}`).then(res => {
+      
+          this.setState({devices: res.data, loading: false})
+        } ).catch((error) => {this.setState({error: error.toString(), loading: false})});
+  
+      }).catch(err => {
+        this.setState({ loading: false, error: err.toString() });
+      });
+   }
+
+activityView() {
+  return this.state.devices.map((t, index) => {
+       return <Activity {...t} i={index} activate={this.onActivate} deactivate={this.onDeActivate} key={t.id}/>
+      })
 }
 
         Loaderview() {
@@ -77,7 +157,7 @@ export class Profile extends Component {
                     <h4>Registered Devices</h4>
                   </div>
                   <div className="card-body">
-                    25,099
+                    {this.state.devices.length}
                   </div>
                 </div>
               </div>
@@ -92,7 +172,7 @@ export class Profile extends Component {
                     <h4>Blocked</h4>
                   </div>
                   <div className="card-body">
-                    92
+                  {this.state.blocked}
                   </div>
                 </div>
               </div>
@@ -107,7 +187,7 @@ export class Profile extends Component {
                     <h4>Locked</h4>
                   </div>
                   <div className="card-body">
-                    213
+                  {this.state.locked}
                   </div>
                 </div>
               </div>
@@ -122,7 +202,7 @@ export class Profile extends Component {
                     <h4>Active</h4>
                   </div>
                   <div className="card-body">
-                    18,770
+                  {this.state.active}
                   </div>
                 </div>
               </div>
@@ -139,6 +219,8 @@ export class Profile extends Component {
             <h4>Recent Device Activity</h4>
             
           </div>
+
+
           <div className="card-body">
             <div className="table-responsive">
               <table className="table table-striped" id="table-1">
@@ -147,30 +229,24 @@ export class Profile extends Component {
                     <th className="text-center">
                       #
                     </th>
-                    <th>Name</th>
-                    <th>Amount</th>
+                    <th>User</th>
+                    <th>Device ID</th>
                     <th>KiD</th>
-                    <th>Recent Activity</th>
+                    <th>Last login</th>
                     <th>Status</th>
-                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>
-                      1
-                    </td>
-                    <td>Sale Taujeed</td>
-                    <td>&#8358;50,000</td>
-                    <td>128589935</td>
-                    <td>5 Minutes ago</td>
-                    <td><div className="badge badge-success">Resolved</div></td>
-                    <td><Link to="/" className="btn btn-secondary">Detail</Link></td>
-                  </tr>
-                  
+                {this.activityView()}
                     
                 </tbody>
               </table>
+              {this.Loaderview()}
+                        <div className="text-center p-t-30">
+																	<p className="txt1">
+																		{this.state.error}
+																	</p>
+                                  </div>
             </div>
           </div>
         </div>

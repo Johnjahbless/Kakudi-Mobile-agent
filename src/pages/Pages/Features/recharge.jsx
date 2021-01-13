@@ -37,6 +37,7 @@ export class Profile extends Component {
          
          this.state = {
              balance: 0,
+             commision: 0,
              cardNumber: '',
              month: '',
              year: '',
@@ -55,9 +56,13 @@ export class Profile extends Component {
     axios.get(`${data.host}api/v1/wallet/balance?token=${data.token}`)
       .then(response => {
         // eslint-disable-next-line
-        this.setState({balance: response.data[0].balance})
+        this.setState({balance: Number.parseFloat(response.data[0].balance)})
       }).catch((error) => {console.log(error)});
-  
+      axios.get(`${data.host}api/v1/commission/balance?token=${data.token}`)
+      .then(response => {
+        // eslint-disable-next-line
+        this.setState({commision: Number.parseFloat(response.data[0].balance)})
+      }).catch((error) => {console.log(error)});
       axios.get(`${data.host}api/v1/agent/cards?token=${data.token}`)
       .then(response => {
         // eslint-disable-next-line
@@ -326,9 +331,16 @@ cardsView() {
                   <div className="card img-fluid">
                     <img className="card-img-top" src="../assets/img/kakudi_card_bg.svg" alt="Card" style={{width:"100%"}} />
                     <div className="card-img-overlay">
+                    <div style={{float: "left"}}>
                       <p className="card-text text-white">Current Balance</p>
-                      <h4 className="card-title text-white my-4">&#8358; {this.state.balance}</h4>
+                      <h4 className="card-title text-white my-3">&#8358; <span>{this.state.balance.toFixed(2)}</span></h4>
                       <p className="card-title text-light mt-3"><Link to="/add-funds" className="text-light">Add funds <i className="fa fa-plus-circle"></i></Link></p>
+                      </div>
+                      <div style={{float: "right"}}>
+                      <p className="card-text text-white">Commision Balance</p>
+                      <h4 className="card-title text-white my-3">&#8358; <span>{this.state.commision.toFixed(2)}</span></h4>
+                      <p className="card-title text-light mt-3"><Link to="/unload" className="text-light">Unload Commission <i className="fa fa-plus-circle"></i></Link></p>
+                      </div>
                     </div>
                   </div>
                 </div>

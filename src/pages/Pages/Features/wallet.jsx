@@ -13,7 +13,7 @@ const Transaction = props => (
     {props.i}
   </td>
   <td>{props.title}</td>
-  <td className="align-middle">{props.transaction_type == 1? 'Transfer' : props.transaction_type == 2? 'Topup' : props.transaction_type == 3? 'Withdraw' : props.transaction_type == 4? 'Airtime recharge' : props.transaction_type == 4? 'Data recharge' : ''} </td>
+  <td className="align-middle">{props.transaction_type == 1? 'Transfer' : props.transaction_type == 2? 'Topup' : props.transaction_type == 3? 'Withdraw' : props.transaction_type == 4? 'Airtime recharge' : props.transaction_type == 5? 'Data recharge' : props.transaction_type == 6? 'Unload Commission' : ''} </td>
   <td className="">{props.amount}</td>
   <td>{moment(props.date_added).format('YYYY MMM DD')}</td>
   <td><div className="badge badge-warning">{props.status == 1? 'Successful' : 'Failed'}</div></td>
@@ -28,7 +28,7 @@ const Cards = props => (
     <i className="fas fa-credit-card"></i>
   </div>
   <div className="media-body">
-  <div className="media-right"><button onClick={() => { props.delete(props.id) }} className="text-danger">Delete Card<i className="fas fa-trash-alt text-danger"></i></button></div>
+  <div className="media-right"><a href="#delete" onClick={() => { props.delete(props.id) }} className="text-danger">Delete Card<i className="fas fa-trash-alt text-danger"></i></a></div>
     <div className="media-title">{props.title}</div>
     <div className="text-small text-muted">{props.card_no.substring(0,4)}************** <div className="bullet"></div> Expires {props.month}/{props.year}</div>
   </div>
@@ -43,6 +43,7 @@ export class Profile extends Component {
          this.state = {
              loading: true,
              balance: 0,
+             commision: 0,
              cards: [],
              transactions: []
          }
@@ -63,11 +64,17 @@ export class Profile extends Component {
             });
         }).catch((error) => this.setState({error: error.toString(), loading: false}));
 
+        axios.get(`${data.host}api/v1/commission/balance?token=${data.token}`)
+        .then(response => {
+          // eslint-disable-next-line
+          this.setState({commision: parseFloat(response.data[0].balance)})
+        }).catch((error) => {console.log(error)});
+
 
         axios.get(`${data.host}api/v1/wallet/balance?token=${data.token}`)
         .then(response => {
           // eslint-disable-next-line
-          this.setState({balance: response.data[0].balance})
+          this.setState({balance: parseFloat(response.data[0].balance)})
         }).catch((error) => {console.log(error)});
     
         axios.get(`${data.host}api/v1/agent/cards?token=${data.token}`)
@@ -80,6 +87,20 @@ export class Profile extends Component {
 
 onDelete(id) {
   
+      const details = { id }
+  
+  
+   axios.post(`${data.host}api/v1/agent/card/delete?token=${data.token}`, details)
+          .then(res => {
+            
+        axios.get(`${data.host}api/v1/agent/cards?token=${data.token}`)
+        .then(response => {
+          // eslint-disable-next-line
+          this.setState({cards: response.data})
+        }).catch((error) => {console.log(error)});
+          }).catch(err => {
+            this.setState({ loading: false, error: err.toString() });
+          });
 }
 
 cardsView() {
@@ -122,10 +143,18 @@ transactionsView() {
                   <div className="card img-fluid">
                     <img className="card-img-top" src="../assets/img/kakudi_card_bg.svg" alt="Card" style={{width:"100%"}} />
                     <div className="card-img-overlay">
+                    <div style={{float: "left"}}>
                       <p className="card-text text-white">Current Balance</p>
-                      <h4 className="card-title text-white my-4">&#8358; {this.state.balance}</h4>
+                      <h4 className="card-title text-white my-4">&#8358; {this.state.balance.toFixed(2)}</h4>
                       <p className="card-title text-light mt-5"><Link to="/add-funds" className="text-light">Add funds <i className="fa fa-plus-circle"></i></Link></p>
                     </div>
+                    
+                      <div style={{float: "right"}}>
+                      <p className="card-text text-white">Commision Balance</p>
+                      <h4 className="card-title text-white my-4">&#8358; <span>{this.state.commision.toFixed(2)}</span></h4>
+                      <p className="card-title text-light mt-5"><Link to="/unload" className="text-light">Unload Commission <i className="fa fa-plus-circle"></i></Link></p>
+                      </div>
+                      </div>
                   </div>
                 </div>
               </div>
