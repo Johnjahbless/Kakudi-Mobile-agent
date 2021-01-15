@@ -275,9 +275,9 @@ cardsView() {
                     <div className="form-group col-6">
                       <label>Airtime/ Data Purchase</label>
                       <select className="form-control" onChange={this.onChangePurchaseType} required>
-                        <option option="0">Select Purchase Type</option>
-                        <option option="4">Airtime</option>
-                        <option option="5">Data</option>
+                        <option value="0">Select Purchase Type</option>
+                        <option value="4">Airtime</option>
+                        <option value="5">Data</option>
                       </select>
                     </div>
                   </div>
@@ -286,11 +286,11 @@ cardsView() {
                     <div className="form-group col-6">
                       <label>Select Network Provider</label>
                       <select className="form-control"onChange={this.onChangeNetworkType} required>
-                      <option option="0">Select Network</option>
-                        <option option="1">MTN NG</option>
-                        <option option="2">Globalcom</option>
-                        <option option="3">Airtel</option>
-                        <option option="4">9mobile</option>
+                      <option value="0">Select Network</option>
+                        <option value="1">MTN NG</option>
+                        <option value="2">Globalcom</option>
+                        <option value="3">Airtel</option>
+                        <option value="4">9mobile</option>
                       </select>
                     </div>
 
@@ -447,10 +447,9 @@ cardsView() {
                  
                   <div id="nav-tab-wallet" className="tab-pane fade">
                     <p>Make Purchasing using funds in Your wallet</p>
-                    <p>
-                      <button type="button" onClick={this.onPay} className="btn btn-primary rounded-pill"> Pay with Wallet</button>
-                    </p>
-                    <p className="text-muted">Please do add funds to your wallet to complete this transaction. <Link to="/add-funds">Add Funds Now</Link></p>
+                    {this.state.amount <= this.state.balance? <p><button type="button" onClick={this.onPay} className="btn btn-primary rounded-pill"> Pay with Wallet</button></p> :
+                    <p className="text-muted">Please do add funds to your wallet to complete this transaction. <Link to="/add-funds">Add Funds Now</Link></p>}
+                 {this.state.loading? this.Loaderview() : null}
                   </div>
                  
                   <div id="nav-tab-cards" className="tab-pane fade">

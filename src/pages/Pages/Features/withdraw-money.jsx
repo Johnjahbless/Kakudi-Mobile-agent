@@ -73,7 +73,7 @@ onSubmit(e) {
 
    if(bank == '0') return this.setState({ error: 'Please select a bank type' });
 
-  // if(amount >= balance) return this.setState({ error: 'Sorry, insufficient balance please fund your wallet' });
+   if(amount >= balance) return this.setState({ error: 'Sorry, insufficient balance please fund your wallet' });
 
  
   if(saveDetails){
@@ -90,16 +90,28 @@ onSubmit(e) {
 
  axios.post(`${data.host}api/v1/agent/beneficiary/bank/add?token=${data.token}`, details).then(res => { }).catch(err => {});
 
-        this.performTransaction()
-        return;
   }
-  this.performTransaction()
+
+  this.performTransaction();
 
 }
 performTransaction() {
+  const { account, bank, narration, saveDetails, amount, balance } = this.state;
 
-  this.setState({error: ''})
-  $('#mediumModal').modal('show');
+
+  this.setState({ loading: true, error: '' })
+
+  const details = { account, bank, narration, saveDetails, amount, balance }
+
+
+  axios.post(`${data.host}api/v1/agent/wallet/withdraw?token=${data.token}`, details)
+    .then(res => {
+      this.setState({ loading: false });
+      $('#mediumModal').modal('show');
+    }).catch(err => {
+      this.setState({ loading: false, error: err.toString() });
+    });
+  
 }
 
 
@@ -153,7 +165,7 @@ performTransaction() {
                     </div>
                     <div className="form-group col-6">
                       <label for="amount">Amount</label>
-                      <input id="amount" placeholder="Enter Amount" min="1000" onChange={this.onChangeAmount} value={this.state.amount} required type="number" className="form-control" name="amount" />
+                      <input id="amount" placeholder="Enter Amount" min="100" onChange={this.onChangeAmount} value={this.state.amount} required type="number" className="form-control" name="amount" />
                     </div>
                   </div>
 
@@ -202,7 +214,7 @@ performTransaction() {
                 <h4 className="mx-auto display-5 py-3">Congratulations!!!</h4>
 
                 <div className="card-body mx-auto">
-                  <p className="text-center">Your have successfully sent <br /> <span className="font-weight-bold">N {this.state.amount}</span> to <span className="font-weight-bold">Name of Beneficiary</span> </p>
+                  <p className="text-center">Your have successfully sent <br /> <span className="font-weight-bold">&#8358; {this.state.amount}</span> to Account No.  <span className="font-weight-bold">{this.state.account}</span> </p>
                   <Link className="btn btn-outline-primary py-2 btn-lg btn-block rounded" to="/">Return Home</Link>
 
                 </div>
