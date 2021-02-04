@@ -384,7 +384,7 @@ cardsView() {
                 <div className="card-header">
                   <h4>Wallet</h4>
                 </div>
-                { this.state.matches? <div className="card-body">
+                { this.state.matches? <div className="card-body row">
                   <div className="card img-fluid">
                     <img className="card-img-top" src="../assets/img/kakudi_card_bg.svg" alt="Card" style={{width:"100%"}} />
                     <div className="card-img-overlay">

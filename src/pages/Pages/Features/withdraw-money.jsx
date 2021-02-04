@@ -24,11 +24,14 @@ export class Profile extends Component {
              amount: '',
              saveDetails: '',
              loading: false,
-             banks: []
+             banks: [],
+             matches: window.matchMedia("(min-width: 768px)").matches 
          }
  }
   componentDidMount() {
- 
+    const handler = e => this.setState({matches: e.matches});
+    window.matchMedia("(min-width: 768px)").addListener(handler);
+
     axios.get(`${data.host}api/v1/wallet/balance?token=${data.token}`)
       .then(response => {
         // eslint-disable-next-line
@@ -143,7 +146,7 @@ performTransaction() {
                 </div>
                 <div className="card-body pb-5">
 
-                                <form onSubmit={this.onSubmit}>
+                              {this.state.matches?   <form onSubmit={this.onSubmit}>
                   <div className="row">
                     <div className="form-group col-6">
                       <label for="account_number">Account Number</label>
@@ -181,7 +184,46 @@ performTransaction() {
                       Send Money now
                     </button>}
                   </div>
-                </form>
+                </form> : 
+                <form onSubmit={this.onSubmit}>
+                <div className="row">
+                  <div className="form-group col-12">
+                    <label for="account_number">Account Number</label>
+                    <input id="account_number" onChange={this.onChangeAccount} minLength="10" maxLength="10" value={this.state.account} placeholder="Enter Beneficiary’s Account Number" required type="text" className="form-control" name="account_number" autofocus />
+                  </div>
+                  <div className="form-group col-12">
+                    <label>Bank Name</label>
+                    <select className="form-control" onChange={this.onChangeBank} required>
+                      <option value="0">Select Bank</option>
+                      {this.state.banks.map(b => <option value={b.id}>{b.title}</option>)}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="row">
+                  <div className="form-group col-12">
+                    <label for="notes">Personalized note</label>
+                    <input id="notes" placeholder="Type in a narration" onChange={this.onChangeNarration} value={this.state.narration} required type="text" className="form-control" name="notes" />
+                  </div>
+                  <div className="form-group col-12">
+                    <label for="amount">Amount</label>
+                    <input id="amount" placeholder="Enter Amount" min="100" onChange={this.onChangeAmount} value={this.state.amount} required type="number" className="form-control" name="amount" />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <div className="custom-control custom-checkbox">
+                    <input type="checkbox" name="save_details" className="custom-control-input" id="save_details" onChange={this.onChangeSaveDetails} />
+                    <label className="custom-control-label" for="save_details">Save bank details</label>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                {this.state.loading? this.Loaderview() : <button type="submit" className="btn btn-primary btn-lg btn-block">
+                    Send Money now
+                  </button>}
+                </div>
+              </form>}
                 <div className="text-center p-t-30">
 																	<p className="txt1">
 																		{this.state.error}

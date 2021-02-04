@@ -10,7 +10,7 @@ import Loading from './loader';
 const Transaction = props => (
   <tr>
   <td>
-    {props.i}
+    {props.i + 1}
   </td>
   <td>{props.title}</td>
   <td className="align-middle">{props.transaction_type == 1? 'Transfer' : props.transaction_type == 2? 'Topup' : props.transaction_type == 3? 'Withdraw' : props.transaction_type == 4? 'Airtime recharge' : props.transaction_type == 5? 'Data recharge' : props.transaction_type == 6? 'Unload Commission' : ''} </td>

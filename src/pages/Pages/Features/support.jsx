@@ -10,7 +10,7 @@ import Loading from './loader';
 const Activity = props => (
   <tr>
     <td>
-      {props.i}
+      {props.i + 1}
     </td>
     <td>{props.firstName + ' ' + props.lastName}</td>
     <td>{props.role == 2 ? 'Agent' : 'Customer'}</td>
