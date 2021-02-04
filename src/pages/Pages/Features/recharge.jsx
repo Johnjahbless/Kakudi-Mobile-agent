@@ -4,6 +4,10 @@ import $ from 'jquery';
 import { Link } from 'react-router-dom';
 import data from '../../../components/constants';
 import Loading from './loader';
+import Cookies from 'universal-cookie';
+const options = { path: '/', maxAge: 60 * 60 * 24 };
+
+const cookies = new Cookies();
 
 
 const Cards = props => (
@@ -48,11 +52,15 @@ export class Profile extends Component {
              amount: 0,
              saveDetails: '',
              loading: false,
-             cards: []
+             cards: [],
+             matches: window.matchMedia("(min-width: 768px)").matches 
          }
  }
   componentDidMount() {
-   
+    const handler = e => this.setState({matches: e.matches});
+    window.matchMedia("(min-width: 768px)").addListener(handler);
+    
+
     axios.get(`${data.host}api/v1/wallet/balance?token=${data.token}`)
       .then(response => {
         // eslint-disable-next-line
@@ -118,31 +126,35 @@ onSubmit(e) {
 
    if(networkType == '0' || purchaseType == '0') return this.setState({ error: 'Invalid form data filled' });
 
- 
+   const details = {
+    phone: phone,
+    networkType: networkType,
+    purchaseType: purchaseType,
+    amount: amount
+  }
+  
   if(saveDetails){
     
     this.setState({ loading: true, error: '' })
 
-    const details = {
-      phone: phone,
-      networkType: networkType,
-      purchaseType: purchaseType,
-      amount: amount
-    }
+
 
 
  axios.post(`${data.host}api/v1/agent/beneficiary/add?token=${data.token}`, details)
         .then(res => {
           this.setState({ loading: false, error: 'Beneficiary Successfully added'});
-          $('#mediumModal').modal('show');
+         // $('#mediumModal').modal('show');
+         cookies.set('__recharge', details, options);
+         window.location = 'confirm-recharge';
         }).catch(err => {
           this.setState({ loading: false, error: err.toString() });
         });
 
         return;
   }
+  cookies.set('__recharge', details, options);
   this.setState({error: '' })
-  $('#mediumModal').modal('show');
+  window.location = 'confirm-recharge';
 
 }
 
@@ -266,7 +278,7 @@ cardsView() {
                 </div>
                 <div className="card-body pb-5">
 
-                <form onSubmit={this.onSubmit}>
+               {this.state.matches? <form onSubmit={this.onSubmit}>
                   <div className="row">
                     <div className="form-group col-6">
                       <label for="account_number">Phone Number</label>
@@ -280,9 +292,8 @@ cardsView() {
                         <option value="5">Data</option>
                       </select>
                     </div>
-                  </div>
-
-                  <div className="row">
+                    </div>
+                    <div className="row">
                     <div className="form-group col-6">
                       <label>Select Network Provider</label>
                       <select className="form-control"onChange={this.onChangeNetworkType} required>
@@ -312,7 +323,53 @@ cardsView() {
                       Make Purchase
                     </button>}
                   </div>
-                </form>
+                </form> : 
+                <form onSubmit={this.onSubmit}>
+                <div className="row">
+                  <div className="form-group col-12">
+                    <label for="account_number">Phone Number</label>
+                    <input id="account_number" minLength="11" maxLength="11" onChange={this.onChangePhone} value={this.state.phone} placeholder="Enter Your Phone Number" required type="phone" className="form-control" name="phone_number" autofocus />
+                  </div>
+                  <div className="form-group col-12">
+                    <label>Airtime/ Data Purchase</label>
+                    <select className="form-control" onChange={this.onChangePurchaseType} required>
+                      <option value="0">Select Purchase Type</option>
+                      <option value="4">Airtime</option>
+                      <option value="5">Data</option>
+                    </select>
+                  </div>
+                  </div>
+                  <div className="row">
+                  <div className="form-group col-12">
+                    <label>Select Network Provider</label>
+                    <select className="form-control"onChange={this.onChangeNetworkType} required>
+                    <option value="0">Select Network</option>
+                      <option value="1">MTN NG</option>
+                      <option value="2">Globalcom</option>
+                      <option value="3">Airtel</option>
+                      <option value="4">9mobile</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group col-12">
+                    <label for="amount">Amount</label>
+                    <input id="amount" placeholder="Enter Amount" min="100" onChange={this.onChangeAmount} value={this.state.amount} required type="number" className="form-control" name="amount" />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <div className="custom-control custom-checkbox">
+                    <input type="checkbox" name="save_details" className="custom-control-input" onChange={this.onChangeSaveDetails} id="save_details" />
+                    <label className="custom-control-label" for="save_details">Save beneficiary details</label>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                 {this.state.loading? this.Loaderview() : <button type="submit" className="btn btn-primary btn-lg btn-block">
+                    Make Purchase
+                  </button>}
+                </div>
+              </form>}
                 <div className="text-center p-t-30">
 																	<p className="txt1">
 																		{this.state.error}
@@ -327,23 +384,53 @@ cardsView() {
                 <div className="card-header">
                   <h4>Wallet</h4>
                 </div>
-                <div className="card-body">
+                { this.state.matches? <div className="card-body">
                   <div className="card img-fluid">
                     <img className="card-img-top" src="../assets/img/kakudi_card_bg.svg" alt="Card" style={{width:"100%"}} />
                     <div className="card-img-overlay">
                     <div style={{float: "left"}}>
-                      <p className="card-text text-white">Current Balance</p>
-                      <h4 className="card-title text-white my-3">&#8358; <span>{this.state.balance.toFixed(2)}</span></h4>
+                      <p className="card-text text-white" style={{fontSize: '8'}}>Current Balance</p>
+                      <h6 className="card-title text-white my-3" style={{fontSize: '12'}}>&#8358; <span>{this.state.balance.toFixed(2)}</span></h6>
                       <p className="card-title text-light mt-3"><Link to="/add-funds" className="text-light">Add funds <i className="fa fa-plus-circle"></i></Link></p>
                       </div>
                       <div style={{float: "right"}}>
-                      <p className="card-text text-white">Commision Balance</p>
-                      <h4 className="card-title text-white my-3">&#8358; <span>{this.state.commision.toFixed(2)}</span></h4>
+                      <p className="card-text text-white" style={{fontSize: '8'}}>Commision Balance</p>
+                      <h6 className="card-title text-white my-3" style={{fontSize: '12'}}>&#8358; <span>{this.state.commision.toFixed(2)}</span></h6>
                       <p className="card-title text-light mt-3"><Link to="/unload" className="text-light">Unload Commission <i className="fa fa-plus-circle"></i></Link></p>
                       </div>
                     </div>
                   </div>
                 </div>
+
+:
+<> <div className="card-body">
+                  <div className="card img-fluid">
+                    <img className="card-img-top" src="../assets/img/kakudi_card_bg.svg" alt="Card" style={{ width: "100%" }} />
+                    <div className="card-img-overlay">
+                      <div style={{ float: "left" }}>
+                        <p className="card-text text-white" style={{fontSize: '8'}}>Current Balance</p>
+                        <h4 className="card-title text-white my-3">&#8358; <span>{this.state.balance.toFixed(2)}</span></h4>
+                        <p className="card-title text-light mt-3"><Link to="/add-funds" className="text-light">Add funds <i className="fa fa-plus-circle"></i></Link></p>
+                      </div>
+                    
+                    </div>
+
+                  </div>
+                </div>
+
+                <div className="card-body">
+                  <div className="card img-fluid">
+                    <img className="card-img-top" src="../assets/img/kakudi_card_bg.svg" alt="Card" style={{ width: "100%" }} />
+                    <div className="card-img-overlay">
+                      <div style={{ float: "left" }}>
+                        <p className="card-text text-white" style={{fontSize: '8'}}>Commision Balance</p>
+                        <h4 className="card-title text-white my-3">&#8358; <span>{this.state.commision.toFixed(2)}</span></h4>
+                        <p className="card-title text-light mt-3"><Link to="/unload" className="text-light">Unload Commission <i className="fa fa-plus-circle"></i></Link></p>
+                      </div>
+                    </div>
+
+                  </div>
+                </div> </>}
               </div>
             </div>
           </div>

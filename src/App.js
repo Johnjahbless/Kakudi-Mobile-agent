@@ -7,8 +7,10 @@ import ResetPassword from "./pages/Pages/Auth/ResetPassword";
 import Error404 from "./pages/Pages/Errors/404";
 import Dashboard from "./pages/Pages/Features/dashboard";
 import Recharge from "./pages/Pages/Features/recharge";
+import ConfirmRecharge from "./pages/Pages/Features/confirm-recharge";
 import AddCard from "./pages/Pages/Features/add-card";
 import AddFund from "./pages/Pages/Features/add-funds";
+import ConfirmFund from "./pages/Pages/Features/confirm-funds";
 import WithdrawMoney from "./pages/Pages/Features/withdraw-money";
 import Wallet from "./pages/Pages/Features/wallet";
 import Referral from "./pages/Pages/Features/referrals";
@@ -50,8 +52,10 @@ function App() {
         <Switch history={history}>
           <Route path="/" exact component={Dashboard} />{" "}
           <Route path="/recharge" exact component={Recharge} />{" "}
+          <Route path="/confirm-recharge" exact component={ConfirmRecharge} />{" "}
           <Route path="/add-card" exact component={AddCard} />{" "}
           <Route path="/add-funds" exact component={AddFund} />{" "}
+          <Route path="/confirm-funds" exact component={ConfirmFund} />{" "}
           <Route path="/unload" exact component={UnloadFund} />{" "}
           <Route path="/devices" exact component={DeviceManager} />{" "}
           <Route path="/withdraw-money" exact component={WithdrawMoney} />{" "}

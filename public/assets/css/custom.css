@@ -13,6 +13,10 @@
     display: inline-block;
   }
   
+  .ezra {
+    margin: 5px;
+    }
+    
   .tooltip .tooltiptext {
     visibility: hidden;
     width: 140px;

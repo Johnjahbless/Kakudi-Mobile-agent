@@ -4,6 +4,10 @@ import $ from 'jquery';
 import { Link } from 'react-router-dom';
 import data from '../../../components/constants';
 import Loading from './loader';
+import Cookies from 'universal-cookie';
+const options = { path: '/', maxAge: 60 * 60 * 24 };
+
+const cookies = new Cookies();
 
 
 
@@ -74,7 +78,11 @@ export class Profile extends Component {
 
   onSubmit2(e) {
     e.preventDefault();
-    $('#mediumModal').modal('show');
+    const details = {
+      amount: this.state.amount
+    }
+    cookies.set('__funds', details, options);
+         window.location = 'confirm-funds';
   }
 
   onSubmit(e) {

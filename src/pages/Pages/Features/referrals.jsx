@@ -73,7 +73,7 @@ myFunction() {
                       <div className="card-footer text-center w-50 mx-auto">
 
                         <div className="form-group">
-                          <div className="input-group mb-3">
+                          <div className="input-group">
                             <input type="text" className="form-control" id="myInput" placeholder={window.location.host+'/auth/signup/?referral='+this.state.kid} value={window.location.host+'/auth/signup/?referral='+this.state.kid} aria-label="" />
                             <div className="input-group-append">
                               <button onClick={this.myFunction} className="btn btn-primary" type="button">{this.state.copy} <i className="fas fa-copy"></i>
