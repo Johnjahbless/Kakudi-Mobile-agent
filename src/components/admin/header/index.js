@@ -57,6 +57,12 @@ render() {
           {/*<ToggleData data={EnvelopData} />*/}
           <ToggleData data={NotifyData} />
 
+          <p style={{color: "#fff"}}>Active   </p><div style={{	width: "16px", height: "16px", borderRadius: "50px",
+	lineHeight: "16px",
+	background: "#d9232b",
+	fontSize: "10px",
+  marginTop: "5px",
+  marginLeft: "5px"}}></div>
           <UserDropdown userDetail={userDetail} />
         </ul>
       </nav>

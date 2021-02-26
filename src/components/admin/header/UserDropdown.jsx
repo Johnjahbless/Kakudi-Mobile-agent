@@ -94,7 +94,7 @@ export class UserDropdown extends Component {
           className="nav-link dropdown-toggle nav-link-lg nav-link-user"
         >
           <img
-            alt="student"
+            alt=""
             width="20px"
             height="30px"
             src={this.state.image}

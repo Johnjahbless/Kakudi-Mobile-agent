@@ -68,6 +68,7 @@ myFunction() {
                       <div className="profile-widget-description">
                         <img alt="" src={this.state.image} className="rounded-circle w-25 mx-auto d-block" />
                         <div className="profile-widget-name text-center mt-3">{this.state.name} <br/> <div className="text-muted d-inline font-weight-normal">Current points</div>  <span style={{color:"red"}}> {this.state.referralPoint}</span></div>
+                        <p className="card-title text-light mt-3"><button className="text-light">Unload Points<i className="fa fa-plus-circle"></i></button></p>
 
                       </div>
                       <div className="card-footer text-center w-50 mx-auto">
