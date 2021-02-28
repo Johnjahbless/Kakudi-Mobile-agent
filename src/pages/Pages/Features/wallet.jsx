@@ -23,24 +23,52 @@ const Transaction = props => (
 )
 
 const Cards = props => (
+  <>
   <li className="media mb-3">
   <div className="rounded-circle bg-light p-3 mr-3">
     <i className="fas fa-credit-card"></i>
   </div>
   <div className="media-body">
-  <div className="media-right"><a href="#delete" onClick={() => { props.delete(props.id) }} className="text-danger">Delete Card<i className="fas fa-trash-alt text-danger"></i></a></div>
+  <div className="media-right"><a href="#delete" onClick={()=> {props.showDelete(props.id, props.token)}} className="text-danger">Delete Card<i className="fas fa-trash-alt text-danger"></i></a></div>
     <div className="media-title">{props.title}</div>
     <div className="text-small text-muted">{props.card_no.substring(0,4)}************** <div className="bullet"></div> Expires {props.month}/{props.year}</div>
   </div>
 </li>
+
+{props.deleteID === props.id? props.showSingleDelete(props.id, props.token) : null}
+</>
+)
+
+
+const DeleteDialog = props => (
+  <div id="card" style={{position: "absolute", padding: "20px", right: "0", marginTop: "-80px"}} className="card">
+                              <p style={{margin: "10px", color: "red"}}><i className="ion-android-warning"></i>Enter Token To Confirm delete?</p>
+                              <input type="number" className="form-control" maxLength="5" onChange={props.onChangeToken} value={props.myToken}/>
+                              <p className="txt1">
+																		{props.error2}
+																	</p>
+                              <div style={{display: "inline-block"}}>
+                              
+                              <span id="cancel" style={{float: "left", margin: "10px;"}}><button style={{padding: '0', border: "none", background: "none", outline: "none"}} onClick={()=> {props.cancel()}} ><i className="ion-android-cancel"></i>   Cancel</button> </span>
+                              <span style={{float: "right", marginLeft: "10px"}}><button style={{padding: '0', border: "none", background: "none", outline: "none"}} onClick={()=> {props.delete(props.id, props.token)}}>Yes delete    <i className="ion-android-delete"></i></button></span>
+                              
+                              </div>
+                          </div>
 )
 export class Profile extends Component {
    constructor(props) {
          super(props);
 
          this.onDelete = this.onDelete.bind(this);
+         this.showDelete = this.showDelete.bind(this);
+         this.onDeleteDialog = this.onDeleteDialog.bind(this);
+         this.cancelDelete = this.cancelDelete.bind(this);
+         this.onChangeToken = this.onChangeToken.bind(this);
          
          this.state = {
+          deleteID: '',
+          myToken: '',
+          error2: '',
              loading: true,
              balance: 0,
              commision: 0,
@@ -88,27 +116,47 @@ export class Profile extends Component {
 
 }
 
-onDelete(id) {
+onChangeToken(e){
+  this.setState({myToken: e.target.value, error2: ''})
+}
+
+cancelDelete() {
+  this.setState({deleteID: '', myToken: '', error2: ''})
+}
+
+showDelete(id, token) {
+  this.setState({deleteID: id})
+  return <DeleteDialog id={id} token={token} />
+}
+
+onDeleteDialog(id, token) {
+  return <DeleteDialog id={id} token={token} onChangeToken={this.onChangeToken} myToken={this.state.myToken} error2={this.state.error2} delete={this.onDelete} cancel={this.cancelDelete} />
+}
+
+onDelete(id, token) {
+  const {myToken} = this.state;
+      const details = { id, token, myToken}
   
-      const details = { id }
+      if(myToken != token) return this.setState({error2: 'Invalid token'});
   
-  
+      this.setState({ error2: '' });
+
    axios.post(`${data.host}api/v1/agent/card/delete?token=${data.token}`, details)
           .then(res => {
             
         axios.get(`${data.host}api/v1/agent/cards?token=${data.token}`)
         .then(response => {
           // eslint-disable-next-line
-          this.setState({cards: response.data})
-        }).catch((error) => {console.log(error)});
+          this.setState({cards: response.data, deleteID: ''})
+        }).catch((error) => {});
           }).catch(err => {
-            this.setState({ loading: false, error: err.toString() });
+            this.setState({ loading: false, error2: err.toString() });
           });
 }
 
 cardsView() {
   return this.state.cards.map((t, index) => {
-       return <Cards {...t} i={index} delete={this.onDelete} key={t.id}/>
+       return <Cards {...t} i={index}  showDelete={this.showDelete} deleteID={this.state.deleteID} showSingleDelete={this.onDeleteDialog} delete={this.onDelete} key={t.id}/>
       })
 }
 

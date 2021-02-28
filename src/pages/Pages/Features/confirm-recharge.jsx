@@ -148,7 +148,7 @@ export class Profile extends Component {
   
      axios.post(`${data.host}api/v1/agent/purchase/?token=${data.token}`, details)
             .then(res => {
-              this.setState({ loading: false, error: 'Beneficiary Successfully added'});
+              this.setState({ loading: false, error: 'Transaction successfull'});
              
               $('#congratulationModal').modal('show');
             }).catch(err => {
@@ -454,7 +454,7 @@ export class Profile extends Component {
 
                   <div className="card-body mx-auto">
                     <p className="text-center font-weight-bold">Transaction successful!</p>
-                    <a className="btn btn-outline-primary py-2 btn-lg btn-block rounded" href="index.html">Return Home</a>
+                    <a className="btn btn-outline-primary py-2 btn-lg btn-block rounded" href="/">Return Home</a>
 
                   </div>
                 </div>
