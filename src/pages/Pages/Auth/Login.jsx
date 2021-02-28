@@ -15,6 +15,7 @@ export class Login extends Component {
          super(props);
          this.onChangeEmail = this.onChangeEmail.bind(this);
          this.onChangePassword = this.onChangePassword.bind(this);
+         this.toggleShow = this.toggleShow.bind(this);
          this.onSubmit = this.onSubmit.bind(this); 
  
          this.state = {
@@ -22,6 +23,7 @@ export class Login extends Component {
              password: '',
              error:'',
              loading: false,
+             hidden: true,
              userDetails: '',
              logo: ''
          }
@@ -45,6 +47,10 @@ export class Login extends Component {
       .done ((response) => {
         this.setState({userDetails: response})
       });
+  }
+
+  toggleShow() {
+    this.setState({ hidden: !this.state.hidden });
   }
 
  onChangeEmail(e) {
@@ -141,7 +147,7 @@ export class Login extends Component {
                         </div>
                         <input
                           id="password"
-                          type="password"
+                          type={this.state.hidden ? 'password' : 'text'}
                           className="form-control"
                           name="password"
                           tabIndex="2"
@@ -149,6 +155,7 @@ export class Login extends Component {
                           onChange={this.onChangePassword} 
                           value={this.state.password}
                         />
+                        <button type="button" onClick={this.toggleShow} style={{padding: '0', border: "none", background: "none", outline: "none", right: "0", marginRight: "10px", marginTop: "-30px", float: "right"}} ><i className="fas fa-eye"></i></button>
                         <div className="invalid-feedback">
                           please fill in your password
                         </div>
