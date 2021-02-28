@@ -66,7 +66,7 @@ export class Profile extends Component {
          this.onChangeToken = this.onChangeToken.bind(this);
          
          this.state = {
-          deleteID: '',
+          deleteID: '', 
           myToken: '',
           error2: '',
              loading: true,
