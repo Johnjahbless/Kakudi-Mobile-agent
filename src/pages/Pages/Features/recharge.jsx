@@ -138,6 +138,7 @@ onSubmit(e) {
    const details = {
     phone: phone,
     networkType: networkType,
+    transactionType: purchaseType,
     purchaseType: purchaseType !== '4'? dataTypes.filter(d => d.sid == purchaseType)[0].id : purchaseType,
     amount: purchaseType !== '4'? dataTypes.filter(d => d.sid == purchaseType)[0].amount : amount
   }
