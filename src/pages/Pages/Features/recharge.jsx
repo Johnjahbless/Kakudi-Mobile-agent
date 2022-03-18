@@ -9,7 +9,7 @@ const options = { path: '/', maxAge: 60 * 60 * 24 };
 
 const cookies = new Cookies();
 
-
+ 
 const Cards = props => (
   <Link to=""><li onClick={() => { props.pay(props.id) }} className="media mb-3">
   <div className="rounded-circle bg-light p-3 mr-3">
@@ -53,7 +53,8 @@ export class Profile extends Component {
              saveDetails: '',
              loading: false,
              cards: [],
-             matches: window.matchMedia("(min-width: 768px)").matches 
+             matches: window.matchMedia("(min-width: 768px)").matches,
+             dataTypes: []
          }
  }
   componentDidMount() {
@@ -93,6 +94,7 @@ onChangePurchaseType(e) {
 
 onChangeNetworkType(e) {
   this.setState({networkType: e.target.value});
+  this.fetchData(e.target.value)
 }
 
 onChangeAmount(e) {
@@ -119,18 +121,25 @@ onChangeCardCvv(e) {
   this.setState({cvv: e.target.value});
 }
 
+fetchData(id){
+  this.setState({loading: true})
+  axios.get(`${data.host}api/v1/agent/data-types/${id}?token=${data.token}`)
+  .then(response => this.setState({dataTypes: response.data, loading: false})
+  ).catch((error) => this.setState({error: error.toString(), loading: false}));
+}
+
 onSubmit(e) {
   e.preventDefault();
 
-  const { phone, networkType, purchaseType, saveDetails, amount } = this.state;
+  const { phone, networkType, purchaseType, saveDetails, amount, dataTypes } = this.state;
 
    if(networkType == '0' || purchaseType == '0') return this.setState({ error: 'Invalid form data filled' });
 
    const details = {
     phone: phone,
     networkType: networkType,
-    purchaseType: purchaseType,
-    amount: amount
+    purchaseType: purchaseType !== '4'? dataTypes.filter(d => d.sid == purchaseType)[0].id : purchaseType,
+    amount: purchaseType !== '4'? dataTypes.filter(d => d.sid == purchaseType)[0].amount : amount
   }
   
   if(saveDetails){
@@ -305,10 +314,19 @@ cardsView() {
                       </select>
                     </div>
 
-                    <div className="form-group col-6">
+                    
+                   {this.state.purchaseType === '4'? <div className="form-group col-6">
                       <label for="amount">Amount</label>
                       <input id="amount" placeholder="Enter Amount" min="100" onChange={this.onChangeAmount} value={this.state.amount} required type="number" className="form-control" name="amount" />
-                    </div>
+                    </div> : 
+                       <div className="form-group col-6">
+                       <label>Select Data Amount</label>
+                       <select className="form-control"onChange={this.onChangePurchaseType} required>
+                       <option value="0">Select</option>
+                       {this.state.dataTypes.map((d) => <option value={d.sid}>{d.title+'-(N' + d.amount})</option>)}
+                       </select>
+                     </div>
+                    }
                   </div>
 
                   <div className="form-group">
