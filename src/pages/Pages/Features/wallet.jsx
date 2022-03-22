@@ -14,9 +14,9 @@ const Transaction = props => (
   </td>
   <td>{props.title}</td>
   <td className="align-middle">{props.transaction_type == 1? 'Transfer' : props.transaction_type == 2? 'Topup' : props.transaction_type == 3? 'Withdraw' : props.transaction_type == 4? 'Airtime recharge' : props.transaction_type == 5? 'Data recharge' : props.transaction_type == 6? 'Unload Commission' : ''} </td>
-  <td className="">{props.amount}</td>
+  <td className="">{Number(props.amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</td>
   <td>{moment(props.date_added).format('YYYY MMM DD')}</td>
-  <td><div className="badge badge-warning">{props.status == 1? 'Successful' : 'Failed'}</div></td>
+  <td><div className="badge badge-warning">{props.status == 1? 'Successful' : 'Pending'}</div></td>
   <td><a href="#/" className="btn btn-secondary">Detail</a></td>
 </tr>
 
@@ -98,14 +98,14 @@ export class Profile extends Component {
         axios.get(`${data.host}api/v1/commission/balance?token=${data.token}`)
         .then(response => {
           // eslint-disable-next-line
-          this.setState({commision: parseFloat(response.data[0].balance)})
+          this.setState({commision: response.data[0].balance.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')})
         }).catch((error) => {console.log(error)});
 
 
         axios.get(`${data.host}api/v1/wallet/balance?token=${data.token}`)
         .then(response => {
           // eslint-disable-next-line
-          this.setState({balance: parseFloat(response.data[0].balance)})
+          this.setState({balance: response.data[0].balance.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')})
         }).catch((error) => {console.log(error)});
     
         axios.get(`${data.host}api/v1/agent/cards?token=${data.token}`)
@@ -196,12 +196,12 @@ transactionsView() {
                     <div className="card-img-overlay">
                     <div style={{float: "left"}}>
                       <p className="card-text text-white" style={{fontSize: '8'}}>Current Balance</p>
-                      <h6 className="card-title text-white my-3" style={{fontSize: '12'}}>&#8358; <span>{this.state.balance.toFixed(2)}</span></h6>
+                      <h6 className="card-title text-white my-3" style={{fontSize: '12'}}>&#8358; <span>{this.state.balance}</span></h6>
                       <p className="card-title text-light mt-3"><Link to="/add-funds" className="text-light">Add funds <i className="fa fa-plus-circle"></i></Link></p>
                       </div>
                       <div style={{float: "right"}}>
                       <p className="card-text text-white" style={{fontSize: '8'}}>Commision Balance</p>
-                      <h6 className="card-title text-white my-3" style={{fontSize: '12'}}>&#8358; <span>{this.state.commision.toFixed(2)}</span></h6>
+                      <h6 className="card-title text-white my-3" style={{fontSize: '12'}}>&#8358; <span>{this.state.commision}</span></h6>
                       <p className="card-title text-light mt-3"><Link to="/unload" className="text-light">Unload Commission <i className="fa fa-plus-circle"></i></Link></p>
                       </div>
                     </div>
@@ -215,7 +215,7 @@ transactionsView() {
                     <div className="card-img-overlay">
                       <div style={{ float: "left" }}>
                         <p className="card-text text-white" style={{fontSize: '8'}}>Current Balance</p>
-                        <h4 className="card-title text-white my-3">&#8358; <span>{this.state.balance.toFixed(2)}</span></h4>
+                        <h4 className="card-title text-white my-3">&#8358; <span>{this.state.balance}</span></h4>
                         <p className="card-title text-light mt-3"><Link to="/add-funds" className="text-light">Add funds <i className="fa fa-plus-circle"></i></Link></p>
                       </div>
                     
@@ -230,7 +230,7 @@ transactionsView() {
                     <div className="card-img-overlay">
                       <div style={{ float: "left" }}>
                         <p className="card-text text-white" style={{fontSize: '8'}}>Commision Balance</p>
-                        <h4 className="card-title text-white my-3">&#8358; <span>{this.state.commision.toFixed(2)}</span></h4>
+                        <h4 className="card-title text-white my-3">&#8358; <span>{this.state.commision}</span></h4>
                         <p className="card-title text-light mt-3"><Link to="/unload" className="text-light">Unload Commission <i className="fa fa-plus-circle"></i></Link></p>
                       </div>
                     </div>

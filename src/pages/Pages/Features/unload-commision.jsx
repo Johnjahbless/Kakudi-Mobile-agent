@@ -44,9 +44,9 @@ export class Profile extends Component {
 
     const { amount, commision } = this.state;
 
-    if(amount > commision || amount == 0) return this.setState({ error: 'Please enter an amount lower than your commision' })
+    if(amount > commision) return this.setState({ error: 'Please enter an amount lower than your commision' });
 
-
+    if(amount < 1000) return this.setState({ error: 'You can only unload commision of 1000 and above' });
     this.setState({ loading: true, error: '' })
 
     const details = { amount }

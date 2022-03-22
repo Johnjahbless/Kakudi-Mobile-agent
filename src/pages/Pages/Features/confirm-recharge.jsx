@@ -50,6 +50,7 @@ export class Profile extends Component {
       purchaseType: '0',
       networkType: '0',
       amount: 0,
+      balanceAmount: 0,
       saveDetails: '',
       loading: false,
       cards: [],
@@ -67,7 +68,7 @@ export class Profile extends Component {
     axios.get(`${data.host}api/v1/wallet/balance?token=${data.token}`)
       .then(response => {
         // eslint-disable-next-line
-        this.setState({ balance: Number.parseFloat(response.data[0].balance) })
+        this.setState({ balance: response.data[0].balance.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'), balanceAmount: response.data[0].balance  })
       }).catch((error) => { console.log(error) });
 
     axios.get(`${data.host}api/v1/agent/cards?token=${data.token}`)
@@ -79,7 +80,7 @@ export class Profile extends Component {
       axios.get(`${data.host}api/v1/commission/balance?token=${data.token}`)
       .then(response => {
         // eslint-disable-next-line
-        this.setState({commision: Number.parseFloat(response.data[0].balance)})
+        this.setState({commision: response.data[0].balance.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')})
       }).catch((error) => {console.log(error)});
   }
 
@@ -240,9 +241,9 @@ export class Profile extends Component {
               <div className="card">
                 <div className="card-body pb-5">
                   <ul className="nav nav-pills" id="myTab3" role="tablist">
-                    <li className="nav-item">
+                    {/* <li className="nav-item">
                       <a
-                        className="nav-link active"
+                        className="nav-link"
                         id="home-tab3"
                         data-toggle="tab"
                         href="#home3"
@@ -252,10 +253,10 @@ export class Profile extends Component {
                       >
                         Debit Card
                         </a>
-                    </li>
+                    </li> */}
                     <li className="nav-item">
                       <a
-                        className="nav-link"
+                        className="nav-link active"
                         id="profile-tab3"
                         data-toggle="tab"
                         href="#profile3"
@@ -266,7 +267,7 @@ export class Profile extends Component {
                         Pay with Wallet
                         </a>
                     </li>
-                    <li className="nav-item">
+                    {/* <li className="nav-item">
                       <a
                         className="nav-link"
                         id="contact-tab3"
@@ -278,12 +279,12 @@ export class Profile extends Component {
                       >
                         Pay with Saved Cards
                         </a>
-                    </li>
+                    </li> */}
 
                   </ul>
                   <div className="tab-content" id="myTabContent2">
                     <div
-                      className="tab-pane fade show active"
+                      className="tab-pane fade"
                       id="home3"
                       role="tabpanel"
                       aria-labelledby="home-tab3"
@@ -336,7 +337,7 @@ export class Profile extends Component {
                       </div>
                     </div>
                     <div
-                      className="tab-pane fade"
+                      className="tab-pane fade show active"
                       id="profile3"
                       role="tabpanel"
                       aria-labelledby="profile-tab3"
@@ -344,7 +345,7 @@ export class Profile extends Component {
 
                       <div id="nav-tab-wallet">
                         <p>Make Purchasing using funds in Your wallet</p>
-                        {this.state.amount <= this.state.balance ? <p><button type="button" onClick={this.onPay} className="btn btn-primary rounded-pill"> Pay with Wallet</button></p> :
+                        {this.state.amount <= this.state.balanceAmount ? <p><button type="button" onClick={this.onPay} className="btn btn-primary rounded-pill"> Pay with Wallet</button></p> :
                           <p className="text-muted">Please do add funds to your wallet to complete this transaction. <Link to="/add-funds">Add Funds Now</Link></p>}
                         {this.state.loading ? this.Loaderview() : null}
                       </div>
@@ -385,12 +386,12 @@ export class Profile extends Component {
                     <div className="card-img-overlay">
                     <div style={{float: "left"}}>
                       <p className="card-text text-white" style={{fontSize: '8'}}>Current Balance</p>
-                      <h6 className="card-title text-white my-3" style={{fontSize: '12'}}>&#8358; <span>{this.state.balance.toFixed(2)}</span></h6>
+                      <h6 className="card-title text-white my-3" style={{fontSize: '12'}}>&#8358; <span>{this.state.balance}</span></h6>
                       <p className="card-title text-light mt-3"><Link to="/add-funds" className="text-light">Add funds <i className="fa fa-plus-circle"></i></Link></p>
                       </div>
                       <div style={{float: "right"}}>
                       <p className="card-text text-white" style={{fontSize: '8'}}>Commision Balance</p>
-                      <h6 className="card-title text-white my-3" style={{fontSize: '12'}}>&#8358; <span>{this.state.commision.toFixed(2)}</span></h6>
+                      <h6 className="card-title text-white my-3" style={{fontSize: '12'}}>&#8358; <span>{this.state.commision}</span></h6>
                       <p className="card-title text-light mt-3"><Link to="/unload" className="text-light">Unload Commission <i className="fa fa-plus-circle"></i></Link></p>
                       </div>
                     </div>
@@ -404,7 +405,7 @@ export class Profile extends Component {
                     <div className="card-img-overlay">
                       <div style={{ float: "left" }}>
                         <p className="card-text text-white" style={{fontSize: '8'}}>Current Balance</p>
-                        <h4 className="card-title text-white my-3">&#8358; <span>{this.state.balance.toFixed(2)}</span></h4>
+                        <h4 className="card-title text-white my-3">&#8358; <span>{this.state.balance}</span></h4>
                         <p className="card-title text-light mt-3"><Link to="/add-funds" className="text-light">Add funds <i className="fa fa-plus-circle"></i></Link></p>
                       </div>
                     
@@ -419,7 +420,7 @@ export class Profile extends Component {
                     <div className="card-img-overlay">
                       <div style={{ float: "left" }}>
                         <p className="card-text text-white" style={{fontSize: '8'}}>Commision Balance</p>
-                        <h4 className="card-title text-white my-3">&#8358; <span>{this.state.commision.toFixed(2)}</span></h4>
+                        <h4 className="card-title text-white my-3">&#8358; <span>{this.state.commision}</span></h4>
                         <p className="card-title text-light mt-3"><Link to="/unload" className="text-light">Unload Commission <i className="fa fa-plus-circle"></i></Link></p>
                       </div>
                     </div>

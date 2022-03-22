@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import data from '../../../components/constants';
 import Loading from './loader';
 import Cookies from 'universal-cookie';
-const options = { path: '/', maxAge: 60 * 60 * 24 };
+const options = { path: '/', maxAge: 60 };
 
 const cookies = new Cookies();
 

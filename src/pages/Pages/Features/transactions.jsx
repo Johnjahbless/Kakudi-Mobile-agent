@@ -15,9 +15,9 @@ const Transaction = props => (
   </td>
   <td>{props.title}</td>
   <td className="align-middle">{props.transaction_type == 1? 'Transfer' : props.transaction_type == 2? 'Topup' : props.transaction_type == 3? 'Withdraw' : props.transaction_type == 4? 'Airtime recharge' : props.transaction_type == 5? 'Data recharge' : props.transaction_type == 6? 'Unload Commission' : ''} </td>
-  <td className="">{props.amount}</td>
+  <td className="">{Number(props.amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</td>
   <td>{moment(props.date_added).format('YYYY MMM DD')}</td>
-  <td><div className="badge badge-warning">{props.status == 1? 'Successful' : 'Failed'}</div></td>
+  <td><div className="badge badge-warning">{props.status == 1? 'Successful' : 'Pending'}</div></td>
   <td><a href="#/" className="btn btn-secondary">Detail</a></td>
 </tr>
 

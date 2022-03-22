@@ -33,6 +33,7 @@ export class Profile extends Component {
         this.onSubmit = this.onSubmit.bind(this);
         this.onSubmit2 = this.onSubmit2.bind(this);
         this.onPayCard = this.onPayCard.bind(this);
+        this.onSendRequest = this.onSendRequest.bind(this);
 
         this.state = {
             cardNumber: '',
@@ -60,6 +61,7 @@ export class Profile extends Component {
 
     componentWillUnmount() {
         $('#congratulationModal').modal('hide');
+        $('#sentModal').modal('hide');
     }
 
 
@@ -93,7 +95,7 @@ export class Profile extends Component {
 
         const { cardNumber, month, year, cvv, amount } = this.state;
 
-
+return;
 
         this.setState({ loading: true, error: '' })
 
@@ -117,7 +119,7 @@ export class Profile extends Component {
     onPayCard(cardId) {
         const { amount } = this.state;
 
-
+return;
         this.setState({ loading: true, error: '' })
 
         const details = { amount, cardId }
@@ -132,6 +134,24 @@ export class Profile extends Component {
             });
 
 
+    }
+
+    onSendRequest(){
+        const { cardNumber, month, year, cvv, amount } = this.state;
+
+
+
+        this.setState({ loading: true, error: '' })
+
+        const details = { amount, cardNumber, month, year, cvv }
+
+
+        axios.post(`${data.host}api/v1/agent/fund/tranfer-request?token=${data.token}`, details)
+            .then(res => {
+                $('#sentModal').modal('show');
+            }).catch(err => {
+                this.setState({ loading: false, error: err.toString() });
+            });
     }
 
     cardsView() {
@@ -174,7 +194,7 @@ export class Profile extends Component {
                                                 aria-selected="true"
                                             >
                                                 Debit Card
-                        </a>
+                                            </a>
                                         </li>
                                         <li className="nav-item">
                                             <a
@@ -187,10 +207,22 @@ export class Profile extends Component {
                                                 aria-selected="false"
                                             >
                                                 Fund with Saved Cards
-                        </a>
+                                            </a>
                                         </li>
 
-
+                                        <li className="nav-item">
+                                            <a
+                                                className="nav-link"
+                                                id="profile-tab2"
+                                                data-toggle="tab"
+                                                href="#profile2"
+                                                role="tab"
+                                                aria-controls="profile"
+                                                aria-selected="false"
+                                            >
+                                                Bank Transfer
+                                            </a>
+                                        </li>
                                     </ul>
                                     <div className="tab-content" id="myTabContent2">
                                         <div
@@ -229,7 +261,7 @@ export class Profile extends Component {
                                                         <div className="col-sm-4">
                                                             <div className="form-group mb-4">
                                                                 <label data-toggle="tooltip" title="Three-digits code on the back of your card">CVV
-                                                                <i className="fa fa-question-circle"></i>
+                                                                    <i className="fa fa-question-circle"></i>
                                                                 </label>
                                                                 <input type="text" onChange={this.onChangeCardCvv} value={this.state.cvv} maxLength="3" minLength="3" required className="form-control" />
                                                             </div>
@@ -256,7 +288,7 @@ export class Profile extends Component {
 
                                             <div id="nav-tab-cards">
                                                 <div className="summary-item card-body">
-                                                    <ul className="list-unstyled list-unstyled-border">
+                                                <ul className="list-unstyled list-unstyled-border">
                                                         {this.cardsView()}
                                                     </ul>
                                                     <Link to="/add-card"><div className="card-footer bg-whitesmoke text-center">
@@ -268,6 +300,48 @@ export class Profile extends Component {
 
                                         </div>
 
+
+                                        <div
+                                            className="tab-pane fade"
+                                            id="profile2"
+                                            role="tabpanel"
+                                            aria-labelledby="profile-tab2"
+                                        >
+
+                                            <div id="nav-tab-cards">
+                                                <div className="summary-item card-body">
+
+                                                <ul className="list-unstyled list-unstyled-border">
+                                                       <ol>
+                                                           1. San serif
+                                                       </ol>
+                                                       <ol>
+                                                           2. San serif
+                                                       </ol>
+                                                       <ol>
+                                                           3. San serif
+                                                       </ol>
+                                                       <ol>
+                                                           4. San serif
+                                                       </ol>
+                                                       <ol>
+                                                           5. San serif
+                                                       </ol>
+                                                    </ul>
+
+                                                {this.state.loading ? this.Loaderview() : <button type="button" onClick={ () => this.onSendRequest()} className="subscribe btn btn-primary btn-block rounded-pill shadow-sm"> I have made payment  </button>}
+
+                                                 
+                                                </div>
+                                                <div className="text-center p-t-30">
+                                                    <p className="txt1">
+                                                        {this.state.error}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -298,7 +372,36 @@ export class Profile extends Component {
 
                                     <div className="card-body mx-auto">
                                         <p className="text-center font-weight-bold">Transaction successful!</p>
-                                        <a className="btn btn-outline-primary py-2 btn-lg btn-block rounded" href="index.html">Return Home</a>
+                                        <Link className="btn btn-outline-primary py-2 btn-lg btn-block rounded" to="/">Return Home</Link>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div className="modal fade" id="sentModal" tabindex="-1" role="dialog" aria-labelledby="sentModalLabel" aria-hidden="true">
+                    <div className="modal-dialog modal-lg" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div className="modal-body">
+                                <div className="card card-primary">
+                                    <div className="card-header">
+                                        <img className="mx-auto d-block" src="../assets/img/success_icon.svg" alt="" />
+
+                                    </div>
+                                    <h4 className="mx-auto display-5 py-3">Request Sent</h4>
+
+                                    <div className="card-body mx-auto">
+                                        <p className="text-center font-weight-bold">Your Top up Request Has Been Sent Successfully!</p>
+                                        <Link className="btn btn-outline-primary py-2 btn-lg btn-block rounded" to="/">Return Home</Link>
 
                                     </div>
                                 </div>

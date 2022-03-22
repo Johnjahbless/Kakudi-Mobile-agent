@@ -2,14 +2,16 @@ import React, { Component } from "react";
 import axios from 'axios';
 import $ from 'jquery';
 import { Link } from 'react-router-dom';
+//import { useNavigate } from 'react-router';
 import data from '../../../components/constants';
 import Loading from './loader';
 import Cookies from 'universal-cookie';
-const options = { path: '/', maxAge: 60 * 60 * 24 };
+const options = { path: '/', maxAge: 60 };
 
 const cookies = new Cookies();
 
- 
+//let navigate = useNavigate();
+
 const Cards = props => (
   <Link to=""><li onClick={() => { props.pay(props.id) }} className="media mb-3">
   <div className="rounded-circle bg-light p-3 mr-3">
@@ -65,12 +67,12 @@ export class Profile extends Component {
     axios.get(`${data.host}api/v1/wallet/balance?token=${data.token}`)
       .then(response => {
         // eslint-disable-next-line
-        this.setState({balance: Number.parseFloat(response.data[0].balance)})
+        this.setState({balance: response.data[0].balance.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')})
       }).catch((error) => {console.log(error)});
       axios.get(`${data.host}api/v1/commission/balance?token=${data.token}`)
       .then(response => {
         // eslint-disable-next-line
-        this.setState({commision: Number.parseFloat(response.data[0].balance)})
+        this.setState({commision: response.data[0].balance.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')})
       }).catch((error) => {console.log(error)});
       axios.get(`${data.host}api/v1/agent/cards?token=${data.token}`)
       .then(response => {
@@ -156,6 +158,7 @@ onSubmit(e) {
          // $('#mediumModal').modal('show');
          cookies.set('__recharge', details, options);
          window.location = 'confirm-recharge';
+         //navigate('/confirm-recharge')
         }).catch(err => {
           this.setState({ loading: false, error: err.toString() });
         });
@@ -182,6 +185,7 @@ onSubmit2(e) {
       phone: phone,
       networkType: networkType,
       purchaseType: purchaseType,
+      transactionType: purchaseType,
       amount: amount,
       cardNumber: cardNumber,
       month: month,
@@ -212,6 +216,7 @@ onPay(){
       phone: phone,
       networkType: networkType,
       purchaseType: purchaseType,
+      transactionType: purchaseType,
       amount: amount
     }
 
@@ -409,12 +414,12 @@ cardsView() {
                     <div className="card-img-overlay">
                     <div style={{float: "left"}}>
                       <p className="card-text text-white" style={{fontSize: '8'}}>Current Balance</p>
-                      <h6 className="card-title text-white my-3" style={{fontSize: '12'}}>&#8358; <span>{this.state.balance.toFixed(2)}</span></h6>
+                      <h6 className="card-title text-white my-3" style={{fontSize: '12'}}>&#8358; <span>{this.state.balance}</span></h6>
                       <p className="card-title text-light mt-3"><Link to="/add-funds" className="text-light">Add funds <i className="fa fa-plus-circle"></i></Link></p>
                       </div>
                       <div style={{float: "right"}}>
                       <p className="card-text text-white" style={{fontSize: '8'}}>Commision Balance</p>
-                      <h6 className="card-title text-white my-3" style={{fontSize: '12'}}>&#8358; <span>{this.state.commision.toFixed(2)}</span></h6>
+                      <h6 className="card-title text-white my-3" style={{fontSize: '12'}}>&#8358; <span>{this.state.commision}</span></h6>
                       <p className="card-title text-light mt-3"><Link to="/unload" className="text-light">Unload Commission <i className="fa fa-plus-circle"></i></Link></p>
                       </div>
                     </div>

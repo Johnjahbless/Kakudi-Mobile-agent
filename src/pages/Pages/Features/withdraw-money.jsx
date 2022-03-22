@@ -36,7 +36,7 @@ export class Profile extends Component {
     axios.get(`${data.host}api/v1/wallet/balance?token=${data.token}`)
       .then(response => {
         // eslint-disable-next-line
-        this.setState({balance: response.data[0].balance})
+        this.setState({balance: response.data[0].balance.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')})
       }).catch((error) => {});
   
       axios.get(`${data.host}api/v1/banks?token=${data.token}`)
@@ -48,7 +48,7 @@ export class Profile extends Component {
       axios.get(`${data.host}api/v1/commission/balance?token=${data.token}`)
       .then(response => {
         // eslint-disable-next-line
-        this.setState({commision: Number.parseFloat(response.data[0].balance)})
+        this.setState({commision: response.data[0].balance.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')})
       }).catch((error) => {console.log(error)});
 }
 
@@ -78,7 +78,7 @@ onChangeSaveDetails(e) {
 
 onSubmit(e) {
   e.preventDefault();
-
+return;
   const { account, bank, narration, saveDetails, amount, balance } = this.state;
 
    if(bank == '0') return this.setState({ error: 'Please select a bank type' });
@@ -250,12 +250,12 @@ performTransaction() {
                     <div className="card-img-overlay">
                     <div style={{float: "left"}}>
                       <p className="card-text text-white" style={{fontSize: '8'}}>Current Balance</p>
-                      <h6 className="card-title text-white my-3" style={{fontSize: '12'}}>&#8358; <span>{this.state.balance.toFixed(2)}</span></h6>
+                      <h6 className="card-title text-white my-3" style={{fontSize: '12'}}>&#8358; <span>{this.state.balance}</span></h6>
                       <p className="card-title text-light mt-3"><Link to="/add-funds" className="text-light">Add funds <i className="fa fa-plus-circle"></i></Link></p>
                       </div>
                       <div style={{float: "right"}}>
                       <p className="card-text text-white" style={{fontSize: '8'}}>Commision Balance</p>
-                      <h6 className="card-title text-white my-3" style={{fontSize: '12'}}>&#8358; <span>{this.state.commision.toFixed(2)}</span></h6>
+                      <h6 className="card-title text-white my-3" style={{fontSize: '12'}}>&#8358; <span>{this.state.commision}</span></h6>
                       <p className="card-title text-light mt-3"><Link to="/unload" className="text-light">Unload Commission <i className="fa fa-plus-circle"></i></Link></p>
                       </div>
                     </div>
@@ -269,7 +269,7 @@ performTransaction() {
                     <div className="card-img-overlay">
                       <div style={{ float: "left" }}>
                         <p className="card-text text-white" style={{fontSize: '8'}}>Current Balance</p>
-                        <h4 className="card-title text-white my-3">&#8358; <span>{this.state.balance.toFixed(2)}</span></h4>
+                        <h4 className="card-title text-white my-3">&#8358; <span>{this.state.balance}</span></h4>
                         <p className="card-title text-light mt-3"><Link to="/add-funds" className="text-light">Add funds <i className="fa fa-plus-circle"></i></Link></p>
                       </div>
                     
@@ -284,7 +284,7 @@ performTransaction() {
                     <div className="card-img-overlay">
                       <div style={{ float: "left" }}>
                         <p className="card-text text-white" style={{fontSize: '8'}}>Commision Balance</p>
-                        <h4 className="card-title text-white my-3">&#8358; <span>{this.state.commision.toFixed(2)}</span></h4>
+                        <h4 className="card-title text-white my-3">&#8358; <span>{this.state.commision}</span></h4>
                         <p className="card-title text-light mt-3"><Link to="/unload" className="text-light">Unload Commission <i className="fa fa-plus-circle"></i></Link></p>
                       </div>
                     </div>
