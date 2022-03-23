@@ -433,7 +433,7 @@ cardsView() {
                     <div className="card-img-overlay">
                       <div style={{ float: "left" }}>
                         <p className="card-text text-white" style={{fontSize: '8'}}>Current Balance</p>
-                        <h4 className="card-title text-white my-3">&#8358; <span>{this.state.balance.toFixed(2)}</span></h4>
+                        <h4 className="card-title text-white my-3">&#8358; <span>{this.state.balance}</span></h4>
                         <p className="card-title text-light mt-3"><Link to="/add-funds" className="text-light">Add funds <i className="fa fa-plus-circle"></i></Link></p>
                       </div>
                     
@@ -448,7 +448,7 @@ cardsView() {
                     <div className="card-img-overlay">
                       <div style={{ float: "left" }}>
                         <p className="card-text text-white" style={{fontSize: '8'}}>Commision Balance</p>
-                        <h4 className="card-title text-white my-3">&#8358; <span>{this.state.commision.toFixed(2)}</span></h4>
+                        <h4 className="card-title text-white my-3">&#8358; <span>{this.state.commision}</span></h4>
                         <p className="card-title text-light mt-3"><Link to="/unload" className="text-light">Unload Commission <i className="fa fa-plus-circle"></i></Link></p>
                       </div>
                     </div>
