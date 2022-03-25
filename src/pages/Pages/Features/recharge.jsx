@@ -420,7 +420,7 @@ cardsView() {
                       <div style={{float: "right"}}>
                       <p className="card-text text-white" style={{fontSize: '8'}}>Commision Balance</p>
                       <h6 className="card-title text-white my-3" style={{fontSize: '12'}}>&#8358; <span>{this.state.commision}</span></h6>
-                      <p className="card-title text-light mt-3"><Link to="/unload" className="text-light">Unload Commission <i className="fa fa-plus-circle"></i></Link></p>
+                      {/* <p className="card-title text-light mt-3"><Link to="/unload" className="text-light">Unload Commission <i className="fa fa-plus-circle"></i></Link></p> */}
                       </div>
                     </div>
                   </div>
@@ -449,7 +449,7 @@ cardsView() {
                       <div style={{ float: "left" }}>
                         <p className="card-text text-white" style={{fontSize: '8'}}>Commision Balance</p>
                         <h4 className="card-title text-white my-3">&#8358; <span>{this.state.commision}</span></h4>
-                        <p className="card-title text-light mt-3"><Link to="/unload" className="text-light">Unload Commission <i className="fa fa-plus-circle"></i></Link></p>
+                        {/* <p className="card-title text-light mt-3"><Link to="/unload" className="text-light">Unload Commission <i className="fa fa-plus-circle"></i></Link></p> */}
                       </div>
                     </div>
 
